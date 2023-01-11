@@ -1,9 +1,9 @@
 <template>
-  <v-app >
+  <v-app ref="app" >
 
 
-    <SideBar></SideBar>
-    <AppBar></AppBar>
+    <SideBar ref="sideBar"></SideBar>
+    <AppBar ref="appBar"></AppBar>
 
     <v-main >
       <v-container fluid>

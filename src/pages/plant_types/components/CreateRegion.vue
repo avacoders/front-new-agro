@@ -20,7 +20,7 @@
 
       <v-card>
         <v-card-title class="text-h5 grey lighten-2">
-          Добавить район
+          Добавить регион
         </v-card-title>
 
         <v-card-text>
@@ -52,27 +52,13 @@
                       required
                   ></v-text-field>
                 </v-col>
-                <v-col
-                    cols="12"
-                    md="6"
-                >
-                  <v-select :items="regions"
-                            label="Viloyat"
-                            outlined
-                            v-model="selected_region"
-                            :item-text="(region) => region.name_uz"
-                            return-object
-                            required
-                            :item-value="(region) => region.region_code"
-                  >
-                  </v-select>
-                </v-col>
+
                 <v-col
                     cols="12"
                     md="6"
                 >
                   <v-text-field
-                      v-model="district_code"
+                      v-model="region_code"
                       label="Soato kodi"
                       type="number"
                       required
@@ -90,7 +76,7 @@
           <v-btn
               color="secondary"
               text
-              @click="$store.commit('creatingDistrictDialog', false)"
+              @click="$store.commit('creatingRegionDialog', false)"
           >
             Bekor qilish
           </v-btn>
@@ -111,14 +97,13 @@
 
 <script>
 export default {
-  name: "CreateDistrict",
+  name: "CreateRegion",
   data () {
     return {
       valid: false,
       name_uz: '',
       name_ru: '',
-      selected_region: {},
-      district_code: 0,
+      region_code: 0,
       nameRules: [
         v => !!v || 'Nomi kiritilishi shart',
         v => v.length <= 255 || 'Name must be less than 255 characters',
@@ -135,32 +120,19 @@ export default {
     },
     dialog: {
       get() {
-        return this.$store.getters.creatingDistrictDialog
+        return this.$store.getters.creatingRegionDialog
       },
       set(value) {
-        this.$store.commit('creatingDistrictDialog', value)
+        this.$store.commit('creatingRegionDialog', value)
       }
-    },
-    regions: {
-      get() {
-        return this.$store.getters.regions
-      },
-      set(value) {
-        this.$store.commit('regions', value)
-      }
-    },
-  },
-  mounted() {
-    this.$store.dispatch('getRegions')
-
+    }
   },
   methods: {
     save(){
-      this.$store.dispatch("storeDistrict", {
+      this.$store.dispatch("storeRegion", {
         name_uz: this.name_uz,
         name_ru: this.name_ru,
-        district_code: this.district_code,
-        region_code: this.selected_region.region_code
+        region_code: this.region_code,
       })
     }
   }

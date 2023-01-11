@@ -2,6 +2,10 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import regions from './regions'
 import districts from "@/store/districts";
+import mfies from "@/store/mfies";
+import arrangements from "@/store/arrangements";
+import plant_types from "@/store/plant_types";
+import gis_bridge from "@/store/gis_bridge";
 
 Vue.use(Vuex)
 
@@ -9,7 +13,11 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
     modules: {
         regions,
-        districts
+        districts,
+        mfies,
+        arrangements,
+        plant_types,
+        gis_bridge
     },
     state:{
         title: 'Regions',

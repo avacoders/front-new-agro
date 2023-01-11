@@ -71,8 +71,23 @@
                     cols="12"
                     md="6"
                 >
+                  <v-select :items="districts"
+                            label="Tuman"
+                            outlined
+                            v-model="selected_district"
+                            :item-text="(district) => district.name_uz"
+                            return-object
+                            required
+                            :item-value="(district) => district.district_code"
+                  >
+                  </v-select>
+                </v-col>
+                <v-col
+                    cols="12"
+                    md="6"
+                >
                   <v-text-field
-                      v-model="district_code"
+                      v-model="mfy_code"
                       label="Soato kodi"
                       type="number"
                       required
@@ -81,7 +96,8 @@
                 </v-col>
               </v-row>
             </v-container>
-          </v-form>        </v-card-text>
+          </v-form>
+        </v-card-text>
 
         <v-divider></v-divider>
 
@@ -90,7 +106,7 @@
           <v-btn
               color="secondary"
               text
-              @click="$store.commit('creatingDistrictDialog', false)"
+              @click="$store.commit('creatingRegionDialog', false)"
           >
             Bekor qilish
           </v-btn>
@@ -111,14 +127,16 @@
 
 <script>
 export default {
-  name: "CreateDistrict",
-  data () {
+  name: "CreateMfy",
+  data() {
     return {
       valid: false,
       name_uz: '',
       name_ru: '',
-      selected_region: {},
-      district_code: 0,
+      mfy_code: 0,
+      selected_region: 0,
+      selected_district: 0,
+      districts: [],
       nameRules: [
         v => !!v || 'Nomi kiritilishi shart',
         v => v.length <= 255 || 'Name must be less than 255 characters',
@@ -129,38 +147,41 @@ export default {
       ],
     }
   },
+  mounted() {
+    this.$store.dispatch('getRegions')
+    this.$store.dispatch('getDistricts')
+  },
+  watch:{
+    selected_region: function (val) {
+      this.districts = this.districts_all.filter(district => district.region_code === val.region_code)
+    }
+  },
   computed: {
     loading() {
       return this.$store.getters.loading
     },
     dialog: {
       get() {
-        return this.$store.getters.creatingDistrictDialog
+        return this.$store.getters.creatingRegionDialog
       },
       set(value) {
-        this.$store.commit('creatingDistrictDialog', value)
+        this.$store.commit('creatingRegionDialog', value)
       }
     },
-    regions: {
-      get() {
-        return this.$store.getters.regions
-      },
-      set(value) {
-        this.$store.commit('regions', value)
-      }
+    regions() {
+      return this.$store.getters.regions
     },
-  },
-  mounted() {
-    this.$store.dispatch('getRegions')
-
+    districts_all() {
+      return this.$store.getters.districts
+    },
   },
   methods: {
-    save(){
-      this.$store.dispatch("storeDistrict", {
+    save() {
+      this.$store.dispatch("storeRegion", {
         name_uz: this.name_uz,
         name_ru: this.name_ru,
-        district_code: this.district_code,
-        region_code: this.selected_region.region_code
+        region_code: this.selected_region.region_code,
+        district_code: this.selected_district.district_code,
       })
     }
   }
