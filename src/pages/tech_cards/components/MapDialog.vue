@@ -126,38 +126,14 @@ export default {
     lands: {
       type: Array,
       default: () => []
-    }
+    },
   },
   methods: {
     selectLand() {
       this.$store.commit('land', this.selected.feature)
       this.dialog = false;
     },
-    clickToFeature(feature, layer) {
-      for (let geojson of this.geoJSONs) {
-        geojson.setStyle({
-          fillColor: '#0088ff',
-        })
-      }
-      if (this.selected.feature == feature) {
-        layer.setStyle({
-          fillColor: '#0088ff',
-        });
-        this.selected = {};
-      } else {
-        this.selected = {feature, layer};
-        layer.setStyle({
-          fillColor: '#55ff00',
-        });
-      }
-
-    },
-  },
-  mounted() {
-    $('.leaflet-control-attribution').hide()
-  },
-  watch: {
-    lands() {
+    draw() {
       var This = this
       var map = this.$refs.map.mapObject
       map.eachLayer(function (layer) {
@@ -199,8 +175,53 @@ export default {
       for (var land in this.lands) {
         var geoJSON = L.geoJSON(this.lands[land], options).addTo(this.$refs.map.mapObject).bringToFront()
         this.geoJSONs.push(geoJSON)
+        this.$refs.map.mapObject.fitBounds(geoJSON.getBounds(), {padding: [50, 50]})
       }
-      this.$refs.map.mapObject.fitBounds(geoJSON.getBounds(), {padding: [50, 50]})
+      this.is_changed_map = false
+    },
+    clickToFeature(feature, layer) {
+      for (let geojson of this.geoJSONs) {
+        geojson.setStyle({
+          fillColor: '#0088ff',
+        })
+      }
+      if (this.selected.feature == feature) {
+        layer.setStyle({
+          fillColor: '#0088ff',
+        });
+        this.selected = {};
+      } else {
+        this.selected = {feature, layer};
+        layer.setStyle({
+          fillColor: '#55ff00',
+        });
+      }
+
+    },
+  },
+  mounted() {
+    $('.leaflet-control-attribution').hide()
+    this.draw()
+  },
+  computed: {
+    is_changed_map: {
+      get() {
+        return this.$store.getters.is_changed_map
+      },
+      set(value) {
+        this.$store.commit('is_changed_map', value)
+      }
+    },
+  },
+  watch: {
+    land() {
+      this.draw()
+    },
+    is_changed_map(val) {
+      console.log(val);
+      if(val){
+        this.draw()
+      }
     }
   }
 }

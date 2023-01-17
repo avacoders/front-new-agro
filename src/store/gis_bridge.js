@@ -7,6 +7,7 @@ const state = {
     tech_card_loading: false,
     land: 0,
     plant_type: {},
+    is_changed_map : false,
 }
 
 const getters = {
@@ -16,6 +17,7 @@ const getters = {
     tech_card_loading: state => state.tech_card_loading,
     land: state => state.land,
     plant_type: state => state.plant_type,
+    is_changed_map: state => state.is_changed_map,
 }
 
 const actions = {
@@ -30,6 +32,7 @@ const actions = {
             .then(response => {
                 commit('gis_bridge_lands', response.data[0].features)
                 commit('gis_bridge_lands_loading', false)
+                commit('is_changed_map', true)
             })
             .catch(error => {
                 commit('gis_bridge_lands_loading', false)
@@ -62,6 +65,7 @@ const mutations = {
     tech_card_loading: (state, loading) => (state.tech_card_loading = loading),
     land: (state, land) => (state.land = land),
     plant_type: (state, plant_type) => (state.plant_type = plant_type),
+    is_changed_map: (state, is_changed_map) => (state.is_changed_map = is_changed_map),
 }
 
 export default {

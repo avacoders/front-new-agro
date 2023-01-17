@@ -20,12 +20,14 @@
         </v-tab>
       </v-tabs>
       <v-tabs-items v-model="tab">
+
         <v-tab-item :key="items[0]">
           <data-table/>
         </v-tab-item>
         <v-tab-item :key="items[1]">
-          <map-dialog v-if="lands.length" :lands="lands"/>
+          <map-dialog ref="mapView" :change="tab" :lands="lands"/>
         </v-tab-item>
+
       </v-tabs-items>
     </v-card>
   </div>
