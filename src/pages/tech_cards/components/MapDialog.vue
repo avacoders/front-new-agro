@@ -1,86 +1,65 @@
 <template>
-  <v-dialog
-      v-model="dialog"
-      width="1200"
-      ref="mydialog" eager
-  >
-    <template v-slot:activator="{ on, attrs }">
+  <v-card>
+    <v-card-text class="my-3" :height="200">
+      <h2 v-if="selected.feature && selected.feature.properties">
+        Кадастр рақами : <span class="ml-5">{{ selected.feature.properties.cadastral_number }}</span>
+      </h2>
+      <h2 v-if="selected.feature && selected.feature.properties">
+        Ер майдони : <span class="ml-5">{{ selected.feature.properties.gis_area }} га</span>
+      </h2>
+    </v-card-text>
+
+    <v-card-text>
+      <v-container fluid>
+
+        <l-map
+            ref="map"
+            :options="options"
+            :zoom="zoom"
+            :center="center"
+            v-bind:style="{cursor: 'pointer'}"
+            class="mapCorner">
+          <l-control-layers position="topright"></l-control-layers>
+
+
+          <l-tile-layer
+              v-for="tileProvider in tileProviders"
+              :key="tileProvider.name"
+              :name="tileProvider.name"
+              :visible="tileProvider.visible"
+              :url="tileProvider.url"
+              :attribution="tileProvider.attribution"
+              :max-zoom="tileProvider.maxZoom"
+              :subdomains="tileProvider.subdomains"
+              layer-type="base"/>
+
+
+          <l-control-zoom position="bottomright"></l-control-zoom>
+        </l-map>
+
+      </v-container>
+    </v-card-text>
+
+    <v-divider></v-divider>
+
+    <v-card-actions>
+      <v-spacer></v-spacer>
       <v-btn
           color="secondary"
-          x-large
-          class="mr-4"
-          v-bind="attrs"
-          v-on="on"
-      >Харитада кўриш
+          text
+          @click="dialog = false"
+      >
+        Бекор қилиш
       </v-btn>
-
-    </template>
-
-    <v-card>
-      <v-card-title class="text-h5 grey lighten-2">
-        Харита
-      </v-card-title>
-      <v-card-text class="my-3" :height="200" >
-        <h2 v-if="selected.feature && selected.feature.properties">
-          Кадастр рақами : <span class="ml-5">{{selected.feature.properties.cadastral_number }}</span>
-        </h2>
-        <h2 v-if="selected.feature && selected.feature.properties">
-          Ер майдони : <span class="ml-5">{{selected.feature.properties.gis_area }} га</span>
-        </h2>
-      </v-card-text>
-
-      <v-card-text>
-        <v-container fluid>
-
-          <l-map
-              ref="map"
-              :options="options"
-              :zoom="zoom"
-              :center="center"
-              v-bind:style="{cursor: 'pointer'}"
-              class="mapCorner">
-            <l-control-layers position="topright"></l-control-layers>
-
-
-            <l-tile-layer
-                v-for="tileProvider in tileProviders"
-                :key="tileProvider.name"
-                :name="tileProvider.name"
-                :visible="tileProvider.visible"
-                :url="tileProvider.url"
-                :attribution="tileProvider.attribution"
-                :max-zoom="tileProvider.maxZoom"
-                :subdomains="tileProvider.subdomains"
-                layer-type="base"/>
-
-
-            <l-control-zoom position="bottomright"></l-control-zoom>
-          </l-map>
-
-        </v-container>
-      </v-card-text>
-
-      <v-divider></v-divider>
-
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
-            color="secondary"
-            text
-            @click="dialog = false"
-        >
-          Бекор қилиш
-        </v-btn>
-        <v-btn
-            color="success"
-            :disabled="!selected.feature"
-            @click="selectLand"
-        >
-          Tasdiqlash
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+      <v-btn
+          color="success"
+          :disabled="!selected.feature"
+          @click="selectLand"
+      >
+        Tasdiqlash
+      </v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
@@ -186,7 +165,6 @@ export default {
           map.removeLayer(layer)
         }
       });
-
       var geojsonStyle = {
         fillColor: "#0088ff",
         color: "#000",
@@ -200,14 +178,15 @@ export default {
             tolerance: 3,
             debug: 0,
             style: geojsonStyle,
-            onEachFeature: function (feature, layer) {
-              layer.on('mouseover', function () {
-                this.setStyle({
+            onEachFeature(feature, layer) {
+              layer.on('mouseover', function (e) {
+                console.log(e.layer);
+                layer.setStyle({
                   color: "white"
                 })
               });
               layer.on('mouseout', function () {
-                this.setStyle({
+                layer.setStyle({
                   color: "black"
                 })
               });
@@ -217,13 +196,11 @@ export default {
               layer.myTag = "myGeoJSON"
             },
           };
-      let geoJSON = []
       for (var land in this.lands) {
-        geoJSON = L.geoJSON(this.lands[land], options).addTo(this.$refs.map.mapObject).bringToFront()
+        var geoJSON = L.geoJSON(this.lands[land], options).addTo(this.$refs.map.mapObject).bringToFront()
         this.geoJSONs.push(geoJSON)
-        if(land == this.lands.length)
-        this.$refs.map.mapObject.fitBounds(geoJSON.getBounds(), {padding: [50, 50]})
       }
+      this.$refs.map.mapObject.fitBounds(geoJSON.getBounds(), {padding: [50, 50]})
     }
   }
 }

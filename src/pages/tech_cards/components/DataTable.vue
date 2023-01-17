@@ -4,28 +4,45 @@
       <v-row>
         <v-col>
           <b>Ер майдони:</b>
-          {{ land.properties.gis_area }}
+          {{ land.properties.gis_area }} га
         </v-col>
       </v-row>
     </v-card-title>
-    <v-data-table
-        :headers="headers"
-        :items="tech_card"
-        :search="search"
-        :items-per-page="25"
-        hide-default-footer
-        class="bordered"
-    >
-      <template #item="{ item }">
-        <tr >
-          <template v-for="header of headers" >
-            <td v-bind:key="header.value" :style="showBorder(item)">
-              {{ item[header.value] }}
-            </td>
-          </template>
+    <v-simple-table>
+      <template v-slot:default>
+        <thead>
+        <tr>
+          <th v-for="header in headers" v-bind:key="header.value" :style="showBorder()">
+            {{ header.text }}
+          </th>
         </tr>
+        </thead>
+        <tbody>
+        <template v-for="phase in tech_card">
+          <tr v-bind:key="phase.id">
+            <th colspan="21" :style="showBorder()">{{ phase.name }}</th>
+          </tr>
+          <template v-for="arrangement in phase.arrangements">
+            <tr v-bind:key="`${phase.id}_${arrangement.id}`">
+              <template v-for="header in headers">
+                <td v-bind:key="`${header.value}_${arrangement.id}`" :style="showBorder()">
+                  {{ arrangement[header.value] }}
+                  <template v-if="['result', 'tractor_norma'].includes(header.value)">
+                    {{ arrangement.unit }}
+                  </template>
+                </td>
+              </template>
+            </tr>
+          </template>
+          <tr v-bind:key="`${phase.id}_all`">
+            <th colspan="14" :style="showBorder()">{{ phase.name }}</th>
+            <th :style="showBorder()">{{ phase.phase_overall.days_of_shift }}</th>
+            <th :style="showBorder()">{{ phase.phase_overall.days_of_shift_human }}</th>
+          </tr>
+        </template>
+        </tbody>
       </template>
-    </v-data-table>
+    </v-simple-table>
   </v-card>
 
 </template>
@@ -96,12 +113,6 @@ export default {
           text: 'Тадбир ўтказиладиган майдон, гектар',
           align: 'start',
           value: 'maydon_gektar',
-          sortable: false,
-        },
-        {
-          text: 'ўлчов бирлиги',
-          align: 'start',
-          value: 'unit',
           sortable: false,
         },
         {

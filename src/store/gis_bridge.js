@@ -40,12 +40,12 @@ const actions = {
         commit('gis_bridge_lands_loading', true)
         commit('land', selected_land)
         commit('plant_type', plant_type)
-        var data = new FormData()
-        data.append('ekin_type_id',plant_type.id)
-        data.append('gis_area', selected_land.properties.gis_area)
-        axios.post(`/execute/techcard`, data)
+        var params = {
+            ekin_type_id: plant_type.id,
+            gis_area: selected_land.properties.gis_area,
+        }
+        axios.get(`/tech_card`, {params})
             .then(response => {
-                console.log(response.data);
                 commit('tech_card', response.data)
                 commit('gis_bridge_lands_loading', false)
             }).catch(error => {
