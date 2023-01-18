@@ -172,6 +172,17 @@ export default {
           value: "discharge_human",
           sortable: false,
         },
+        {
+          text: 'механизаторнинг иш хақи',
+          value: "work_machine",
+          sortable: false,
+        },
+        {
+          text: 'ишчининг иш хақи',
+          value: "work_human",
+          sortable: false,
+        },
+
       ],
       page: 1,
       per_page: null,
