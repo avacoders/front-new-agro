@@ -71,13 +71,13 @@ export default {
           text: 'трактор русуми',
           align: 'start',
           sortable: false,
-          value: 'model',
+          value: 'worker',
         },
         {
           text: 'машина русуми ёки иш воситаси ',
           align: 'start',
           sortable: false,
-          value: 'name',
+          value: 'agregat',
         },
         {
           sortable: false,
@@ -182,7 +182,56 @@ export default {
           value: "work_human",
           sortable: false,
         },
-
+        {
+          text: 'Ёнилғи сарфи, литр, бир бир-ликка',
+          value: "bir_birlika_hisob",
+          sortable: false,
+        },
+        {
+          text: 'Ёнилғи сарфи, литр, жами ҳаж-мига',
+          value: "jami_xaj_miga",
+          sortable: false,
+        },
+        {
+          text: '1 соатлик иши учун амортизация ажратмаси, Энергетик восита',
+          value: "amor_energitic",
+          sortable: false,
+        },
+        {
+          text: '1 соатлик иши учун амортизация ажратмаси, ҚХМ',
+          value: "amor_kxm",
+          sortable: false,
+        },
+        {
+          text: '1 соатлик иши учун таъмирлаш ва ТХКга ажратма, сўм,Энергетик восита',
+          value: "tamir_energitic",
+          sortable: false,
+        },
+        {
+          text: '1 соатлик иши учун таъмирлаш ва ТХКга ажратма, сўм, ҚХМ',
+          value: "tamir_kxm",
+          sortable: false,
+        },
+        {
+          text: 'Аморти-зация',
+          value: "amortizciya",
+          sortable: false,
+        },
+        {
+          text: 'Таъмир-лаш',
+          value: "tamirlash",
+          sortable: false,
+        },
+        {
+          text: 'Бошқа',
+          value: "boshka",
+          sortable: false,
+        },
+        {
+          text: 'Жами харажатлар, минг сўм',
+          value: "jami",
+          sortable: false,
+        },
       ],
       page: 1,
       per_page: null,
