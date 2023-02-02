@@ -4,9 +4,7 @@
       <v-card-title>
         Технологик карта
       </v-card-title>
-      <v-card-text>
         <search-tech-card/>
-      </v-card-text>
     </v-card>
     <v-card>
       <v-tabs

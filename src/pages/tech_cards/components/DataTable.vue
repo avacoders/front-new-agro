@@ -8,46 +8,76 @@
         </v-col>
       </v-row>
     </v-card-title>
-    <v-simple-table>
-      <template v-slot:default>
-        <thead>
-        <tr>
-          <th v-for="header in headers" v-bind:key="header.value" :style="showBorder()">
-            {{ header.text }}
-          </th>
-        </tr>
-        </thead>
-        <tbody>
-        <template v-for="phase in tech_card">
-          <tr v-bind:key="phase.id">
-            <th colspan="21" :style="showBorder()">{{ phase.name }}</th>
+    <div>
+      <v-simple-table
+          fixed-header
+          height="90vh">
+        <template v-slot:default>
+          <thead>
+          <tr>
+            <th v-for="header in headers" v-bind:key="header.value" :style="showBorder()">
+              {{ header.text }}
+            </th>
           </tr>
-          <template v-for="arrangement in phase.arrangements">
-            <tr v-bind:key="`${phase.id}_${arrangement.id}`">
-              <template v-for="header in headers">
-                <td v-bind:key="`${header.value}_${arrangement.id}`" :style="showBorder()">
-                  {{ arrangement[header.value] }}
-                  <template v-if="['result', 'tractor_norma'].includes(header.value)">
-                    {{ arrangement.unit }}
-                  </template>
-                </td>
-              </template>
+          </thead>
+          <tbody>
+          <template v-for="phase in tech_card">
+            <tr v-bind:key="phase.id">
+              <th colspan="21" :style="showBorder()">{{ phase.name }}</th>
+            </tr>
+            <template v-for="arrangement in phase.arrangements">
+              <tr v-bind:key="`${phase.id}_${arrangement.id}`">
+                <template v-for="header in headers">
+                  <td v-bind:key="`${header.value}_${arrangement.id}`" :style="showBorder()"
+                      style="position: relative;">
+                    {{ arrangement[header.value] }}
+                    <template v-if="['result', 'tractor_norma'].includes(header.value)">
+                      {{ arrangement.unit }}
+                    </template>
+                    <template v-if="header.value === 'actions'">
+                      <div class="d-flex " style="gap: 4px">
+                        <v-btn
+                            fab
+                            elevation="0"
+                            color="primary" x-small>
+                          <v-icon>mdi-pencil</v-icon>
+                        </v-btn>
+                        <v-btn
+                            fab
+                            elevation="0"
+                            color="error" x-small>
+                          <v-icon>mdi-minus</v-icon>
+                        </v-btn>
+                        <v-btn
+                            fab
+                            elevation="0"
+                            class="add-btn"
+                            color="success" x-small>
+                          <v-icon>mdi-plus</v-icon>
+                        </v-btn>
+                      </div>
+                    </template>
+                  </td>
+                </template>
+              </tr>
+            </template>
+            <tr v-bind:key="`${phase.id}_all`">
+              <th colspan="14" :style="showBorder()">{{ phase.name }}</th>
+              <th :style="showBorder()">{{ phase.phase_overall.days_of_shift }}</th>
+              <th :style="showBorder()">{{ phase.phase_overall.days_of_shift_human }}</th>
             </tr>
           </template>
-          <tr v-bind:key="`${phase.id}_all`">
-            <th colspan="14" :style="showBorder()">{{ phase.name }}</th>
-            <th :style="showBorder()">{{ phase.phase_overall.days_of_shift }}</th>
-            <th :style="showBorder()">{{ phase.phase_overall.days_of_shift_human }}</th>
-          </tr>
+          </tbody>
         </template>
-        </tbody>
-      </template>
-    </v-simple-table>
+      </v-simple-table>
+    </div>
   </v-card>
 
 </template>
 
 <script>
+import $ from "jquery";
+window.$ = $
 
 export default {
   name: "DataTable",
@@ -61,6 +91,12 @@ export default {
       },
       search: '',
       headers: [
+        {
+          text: '',
+          align: 'start',
+          sortable: false,
+          value: 'actions',
+        },
         {
           text: 'Агротехник тадбир номи',
           align: 'start',
@@ -243,7 +279,6 @@ export default {
     },
   },
   mounted() {
-
   },
   watch: {},
   computed: {
@@ -278,6 +313,15 @@ export default {
 
 .my-border {
   border: thin solid #969696;
+}
+
+.add-btn {
+  position: absolute;
+  right: 50%;
+  bottom: 0;
+  opacity: 1;
+  z-index: 1;
+  transform: translate(50%, 50%);
 }
 
 </style>

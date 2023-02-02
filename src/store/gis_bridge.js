@@ -55,7 +55,24 @@ const actions = {
             console.log(error);
             commit('gis_bridge_lands_loading', false)
         })
-    }
+    },
+    // delete_tech_card_element({commit}, ) {
+    //     commit('gis_bridge_lands_loading', true)
+    //     commit('land', selected_land)
+    //     commit('plant_type', plant_type)
+    //     var params = {
+    //         ekin_type_id: plant_type.id,
+    //         gis_area: selected_land.properties.gis_area,
+    //     }
+    //     axios.get(`/tech_card`, {params})
+    //         .then(response => {
+    //             commit('tech_card', response.data)
+    //             commit('gis_bridge_lands_loading', false)
+    //         }).catch(error => {
+    //         console.log(error);
+    //         commit('gis_bridge_lands_loading', false)
+    //     })
+    // }
 }
 
 const mutations = {
