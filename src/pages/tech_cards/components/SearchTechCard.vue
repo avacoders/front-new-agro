@@ -62,8 +62,27 @@
           >Тех. картани яратиш
           </v-btn>
         </div>
+        <template v-if="((selected_land && plant_type && row_space) && ( tech_card.length > 0 && tech_card[0].arrangements.length > 0))">
+
+          <div>
+            <v-btn
+                :disabled="( tech_card.length > 0 && tech_card[0].arrangements.length > 0 && tech_card[0].arrangements[0].copy) "
+                color="success" @click="$store.dispatch('save_tech_card', {selected_land, plant_type})">
+              Сақлаш
+            </v-btn>
+          </div>
+          <div>
+            <v-btn
+                :disabled="!( tech_card.length > 0 && tech_card[0].arrangements.length > 0 && tech_card[0].arrangements[0].copy) "
+                color="secondary" @click="$store.dispatch('cancel_tech_card', {selected_land, plant_type})">
+              Бекор қилиш
+            </v-btn>
+          </div>
+        </template>
+
       </template>
     </div>
+
   </div>
 </template>
 
@@ -76,6 +95,7 @@ export default {
       plant_type: null,
       is_done: false,
       row_space: 60,
+      deletingItem: null,
       row_spaces: [
         45, 60, 90
       ],
@@ -112,6 +132,9 @@ export default {
       set(value) {
         this.$store.commit('gis_bridge_lands', value);
       }
+    },
+    tech_card() {
+      return this.$store.getters.tech_card
     },
     plant_types: {
       get() {

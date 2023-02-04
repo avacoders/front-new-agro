@@ -25,8 +25,8 @@
         <v-tab-item :key="items[1]">
           <map-dialog ref="mapView" :change="tab" :lands="lands"/>
         </v-tab-item>
-
       </v-tabs-items>
+
     </v-card>
   </div>
 </template>

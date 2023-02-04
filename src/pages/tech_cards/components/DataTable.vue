@@ -34,16 +34,18 @@
                     <template v-if="['result', 'tractor_norma'].includes(header.value)">
                       {{ arrangement.unit }}
                     </template>
-                    <template v-if="header.value === 'actions'">
+                    <template v-if="header.value === 'actions' && arrangement.copy">
                       <div class="d-flex " style="gap: 4px">
                         <v-btn
                             fab
                             elevation="0"
+                            @click="editItem(arrangement, arrangement.index,phase.id)"
                             color="primary" x-small>
                           <v-icon>mdi-pencil</v-icon>
                         </v-btn>
                         <v-btn
                             fab
+                            @click="deleteItem(arrangement)"
                             elevation="0"
                             color="error" x-small>
                           <v-icon>mdi-minus</v-icon>
@@ -52,6 +54,7 @@
                             fab
                             elevation="0"
                             class="add-btn"
+                            @click="addItem(arrangement, arrangement.index + 1 ,phase.id)"
                             color="success" x-small>
                           <v-icon>mdi-plus</v-icon>
                         </v-btn>
@@ -71,24 +74,32 @@
         </template>
       </v-simple-table>
     </div>
+    <delete-arrangement
+        :deletingItem="deletingItem"
+    ></delete-arrangement>
+    <create-arrangement
+        :index="index"></create-arrangement>
+    <edit-arrangement
+        :editingItem="editingItem"></edit-arrangement>
   </v-card>
 
 </template>
 
 <script>
 import $ from "jquery";
+
 window.$ = $
+import DeleteArrangement from "./DeleteArrangement";
+import CreateArrangement from "./CreateArrangement";
+import EditArrangement from "@/pages/tech_cards/components/EditArrangement";
 
 export default {
   name: "DataTable",
   data() {
     return {
       deletingItem: {},
-      editingItem: {
-        name_uz: "",
-        name_ru: "",
-        region_code: 0,
-      },
+      editingItem: {},
+      index: null,
       search: '',
       headers: [
         {
@@ -101,7 +112,7 @@ export default {
           text: 'Агротехник тадбир номи',
           align: 'start',
           sortable: false,
-          value: 'arrangements_name',
+          value: 'name',
         },
         {
           text: 'трактор русуми',
@@ -136,19 +147,19 @@ export default {
         {
           text: '1 гектар учун норма',
           align: 'start',
-          value: '1_gektar_norma',
+          value: 'gektar_norma',
           sortable: false,
         },
         {
           text: 'Тадбир ўтказиладиган майдон, %',
           align: 'start',
-          value: 'maydon_procent',
+          value: 'square_procent',
           sortable: false,
         },
         {
           text: 'Тадбир ўтказиладиган майдон, гектар',
           align: 'start',
-          value: 'maydon_gektar',
+          value: 'square_gektar',
           sortable: false,
         },
         {
@@ -165,12 +176,12 @@ export default {
         },
         {
           text: 'Смена давомийлиги, соат',
-          value: 'shift_time',
+          value: 'shift_continuity',
           sortable: false,
         },
         {
           text: 'Сменалик коэффициенти (1,0; 1,5 ёки 2,0)',
-          value: 'shift_coefficient',
+          value: 'smenalik_koeffitsiyenti',
           sortable: false,
         },
         {
@@ -273,9 +284,35 @@ export default {
       per_page: null,
     }
   },
+  components: {
+    EditArrangement,
+    DeleteArrangement,
+    CreateArrangement
+  },
   methods: {
+    save() {
+      this.$store.commit('tech_card_loading', true)
+      this.$store.dispatch('save_tech_card', this.tech_card).then(() => {
+        this.$store.commit('tech_card_loading', false)
+      })
+    },
+    editItem(item, index, phase) {
+      this.editingItem = item
+      this.$store.commit('phase', phase)
+      this.$store.commit('index', index)
+      this.$store.commit('edit_tech_card_dialog', true)
+    },
     showBorder() {
-      return {border: 'thin solid rgba(0,0,0,0.3)'}
+      return {border: 'thin solid rgba(0,0,0,0.3)', height: '100px'}
+    },
+    deleteItem(item) {
+      this.deletingItem = item
+      this.$store.commit('delete_tech_card_dialog', true)
+    },
+    addItem(item, index, phase) {
+      this.$store.commit('add_tech_card_dialog', true)
+      this.$store.commit('phase', phase)
+      this.$store.commit('index', index)
     },
   },
   mounted() {
@@ -323,5 +360,4 @@ export default {
   z-index: 1;
   transform: translate(50%, 50%);
 }
-
 </style>
