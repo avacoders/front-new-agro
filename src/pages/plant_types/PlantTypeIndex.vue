@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import DataTable from "@/pages/regions/components/DataTable";
+import DataTable from "@/pages/plant_types/components/DataTable";
 import CreateRegion from "@/pages/regions/components/CreateRegion";
 export default {
   name: "PlantTypeIndex",

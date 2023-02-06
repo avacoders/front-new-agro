@@ -93,7 +93,7 @@ export default {
     }
   },
   mounted() {
-    this.$store.dispatch("getRegions")
+    this.$store.dispatch("getPlantTypes")
   },
   computed: {
     regions() {

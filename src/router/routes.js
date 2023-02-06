@@ -7,7 +7,7 @@ import plant_types from "@/router/plant_types";
 const routes = [
     {
         path: '/',
-        redirect: '/tech-card',
+        redirect: '/tech-cards',
     },
     {
         path: '/tech-cards',

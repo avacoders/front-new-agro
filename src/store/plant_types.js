@@ -31,9 +31,9 @@ const actions = {
                 console.log(error)
             })
     },
-    getPlantTypes({commit}, params) {
+    getPlantTypes({commit}) {
         commit('plant_types_loading', true)
-        axios.get('/get_plant_types', {params})
+        axios.get('/get_all_plant_types',)
             .then(response => {
                 commit('set_plant_types', response.data)
                 commit('plant_types_loading', false)
@@ -99,6 +99,7 @@ const actions = {
 
 const mutations = {
     set_all_plant_types: (state, all_plant_types) => (state.all_plant_types = all_plant_types),
+    set_plant_types : (state, plant_types) => (state.plant_types = plant_types),
     plant_types_loading: (state, loading) => (state.plant_types_loading = loading),
     deletePlantTypeDialog: (state, dialog) => (state.deletePlantTypeDialog = dialog),
     creatingPlantTypeDialog: (state, dialog) => (state.creatingPlantTypeDialog = dialog),

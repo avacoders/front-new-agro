@@ -11,7 +11,7 @@
 <!--    </v-card-title>-->
     <v-data-table
         :headers="headers"
-        :items="regions"
+        :items="plant_types"
         :search="search"
         :loading="loading"
         :items-per-page="25"
@@ -36,8 +36,8 @@
 </template>
 
 <script>
-import DeleteRegion from "@/pages/regions/components/DeleteRegion";
-import EditRegion from "@/pages/regions/components/EditRegion";
+import DeleteRegion from "@/pages/plant_types/components/DeletePlantType";
+import EditRegion from "@/pages/plant_types/components/EditPlantType";
 
 export default {
   name: "DataTable",
@@ -85,22 +85,22 @@ export default {
   methods: {
     setDeleting(item) {
       this.deletingItem = item;
-      this.$store.commit('deleteRegionDialog', true)
+      this.$store.commit('deletePlantTypeDialog', true)
     },
     setEditing(item) {
       this.editingItem = item;
-      this.$store.commit('editRegionDialog', true)
+      this.$store.commit('editPlantTypeDialog', true)
     }
   },
   mounted() {
-    this.$store.dispatch("getRegions")
+    this.$store.dispatch("getPlantTypes")
   },
   computed: {
-    regions() {
-      return this.$store.getters.regions
+    plant_types() {
+      return this.$store.getters.plant_types
     },
     loading() {
-      return this.$store.getters.regions_loading
+      return this.$store.getters.plant_types_loading
     }
   }
 

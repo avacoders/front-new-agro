@@ -37,7 +37,7 @@
 
 <script>
 export default {
-  name: "DeleteRegion",
+  name: "DeletePlantType",
   props: {
     deletingItem: {
       type: Object,
@@ -46,22 +46,22 @@ export default {
   },
   methods: {
     deleteItem() {
-      this.$store.dispatch('deleteRegion', this.deletingItem)
+      this.dialog = false;
     }
   },
 
   computed: {
     loading: {
       get() {
-        return this.$store.getters.regions_loading
+        return this.$store.getters.plant_types_loading
       }
     },
     dialog: {
       get() {
-        return this.$store.state.regions.deleteRegionDialog;
+        return this.$store.getters.deletePlantTypeDialog;
       },
       set(value) {
-        this.$store.commit("deleteRegionDialog", value);
+        this.$store.commit("deletePlantTypeDialog", value);
       },
     },
   }

@@ -23,6 +23,7 @@
                       label="Nomi (uz)"
                       required
                       outlined
+                      dense
                   ></v-text-field>
                 </v-col>
 
@@ -34,21 +35,9 @@
                       v-model="region.name_ru"
                       :counter="255"
                       label="Nomi (ru)"
+                      dense
                       outlined
                       required
-                  ></v-text-field>
-                </v-col>
-
-                <v-col
-                    cols="12"
-                    md="6"
-                >
-                  <v-text-field
-                      v-model="region.region_code"
-                      label="Soato kodi"
-                      type="number"
-                      required
-                      outlined
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -109,28 +98,29 @@ export default {
   },
   methods: {
     save() {
-      this.$store.dispatch('updateRegion', this.editingRegion)
+      // this.$store.dispatch('updateRegion', this.editingRegion)
+      this.$store.commit('editPlantTypeDialog', false)
     },
     cancel(){
-      this.$store.commit('editRegionDialog', false)
+      this.$store.commit('editPlantTypeDialog', false)
       this.region = null
     }
   },
   computed: {
     dialog: {
       get() {
-        return this.$store.getters.editRegionDialog
+        return this.$store.getters.editPlantTypeDialog
       },
       set(value) {
-        this.$store.commit('editRegionDialog', value)
+        this.$store.commit('editPlantTypeDialog', value)
       }
     },
     loading: {
       get() {
-        return this.$store.state.regions_loading
+        return this.$store.getters.plant_types_loading
       },
       set(value) {
-        this.$store.commit('regions_loading', value)
+        this.$store.commit('plant_types_loading', value)
       }
     }
   },

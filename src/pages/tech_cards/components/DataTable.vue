@@ -10,8 +10,8 @@
     </v-card-title>
     <div>
       <!--      draggable-->
-      <!--          fixed-header-->
       <v-simple-table
+                fixed-header
           height="90vh">
         <template v-slot:default>
           <thead>
@@ -76,7 +76,7 @@
                   <td v-bind:key="`${header.value}_${arrangement.id}`" :style="showBorder()"
                       style="position: relative;">
                     {{ arrangement[header.value] }}
-                    <template v-if="['result', 'tractor_norma'].includes(header.value)">
+                    <template v-if="['result', 'balance_norm'].includes(header.value)">
                       {{ arrangement.unit }}
                     </template>
                     <template v-if="header.value === 'actions' && arrangement.copy">
@@ -189,7 +189,7 @@ export default {
         {
           text: 'давомийлиги',
           align: 'start',
-          value: 'days_to_finish',
+          value: 'number_of_days',
           sortable: false,
         },
         {
@@ -199,7 +199,7 @@ export default {
           sortable: false,
         },
         {
-          text: 'Тадбир ўтказиладиган майдон, %',
+          text: 'Тадбир ўтка-зила-диган май-дон, %',
           align: 'start',
           value: 'square_procent',
           sortable: false,
@@ -219,16 +219,16 @@ export default {
         {
           text: 'Кунлик меъёри (норма)',
           align: 'start',
-          value: 'tractor_norma',
+          value: 'balance_norm',
           sortable: false,
         },
         {
-          text: 'Смена давомийлиги, соат',
+          text: 'Сме-на даво-мий-лиги, соат',
           value: 'shift_continuity',
           sortable: false,
         },
         {
-          text: 'Сменалик коэффициенти (1,0; 1,5 ёки 2,0)',
+          text: 'Сме-на-лик ко-эффи-циенти (1,0; 1,5 ёки 2,0)',
           value: 'smenalik_koeffitsiyenti',
           sortable: false,
         },
@@ -238,17 +238,17 @@ export default {
           sortable: false,
         },
         {
-          text: 'механи-заторнинг иш куни',
+          text: 'механи-затор-нинг иш куни',
           value: "days_of_shift",
           sortable: false,
         },
         {
-          text: 'Ишчининг иш куни',
+          text: 'Ишчи-нинг иш куни',
           value: "day_of_shift",
           sortable: false,
         },
         {
-          text: 'Жалб этиладиган техника ёки одам сони',
+          text: 'Жалб этила-диган тех-ника ёки одам сони',
           value: "Jalo",
           sortable: false,
         },
