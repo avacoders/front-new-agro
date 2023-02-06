@@ -9,22 +9,67 @@
       </v-row>
     </v-card-title>
     <div>
+      <!--      draggable-->
+      <!--          fixed-header-->
       <v-simple-table
-          fixed-header
           height="90vh">
         <template v-slot:default>
           <thead>
           <tr>
-            <th v-for="header in headers" v-bind:key="header.value" :style="showBorder()">
+            <th v-for="header in headers" v-bind:key="header.value"
+                style="border: thin solid rgba(0,0,0,0.3); height: 100px">
               {{ header.text }}
             </th>
           </tr>
           </thead>
-          <tbody>
+
           <template v-for="phase in tech_card">
             <tr v-bind:key="phase.id">
               <th colspan="21" :style="showBorder()">{{ phase.name }}</th>
             </tr>
+            <draggable v-model="phase.arrangements" v-bind:key="`${phase.id}_draggable`" :move="detect" v-if="phase.arrangements.length && phase.arrangements[0].copy" tag="tbody">
+              <template v-for="arrangement in phase.arrangements">
+                <tr v-bind:key="`${phase.id}_${arrangement.id}`">
+                  <template v-for="header in headers">
+                    <td v-bind:key="`${header.value}_${arrangement.id}`" :style="showBorder()"
+                        style="position: relative;">
+                      {{ arrangement[header.value] }}
+                      <template v-if="['result', 'tractor_norma'].includes(header.value)">
+                        {{ arrangement.unit }}
+                      </template>
+                      <template v-if="header.value === 'actions' && arrangement.copy">
+                        <div class="d-flex " style="gap: 4px">
+                          <v-btn
+                              fab
+                              elevation="0"
+                              @click="editItem(arrangement, arrangement.index,phase.id)"
+                              color="primary" x-small>
+                            <v-icon>mdi-pencil</v-icon>
+                          </v-btn>
+                          <v-btn
+                              fab
+                              @click="deleteItem(arrangement)"
+                              elevation="0"
+                              color="error" x-small>
+                            <v-icon>mdi-minus</v-icon>
+                          </v-btn>
+                          <v-btn
+                              fab
+                              elevation="0"
+                              class="add-btn"
+                              @click="addItem(arrangement, arrangement.index + 1 ,phase.id)"
+                              color="success" x-small>
+                            <v-icon>mdi-plus</v-icon>
+                          </v-btn>
+                        </div>
+                      </template>
+                    </td>
+                  </template>
+                </tr>
+              </template>
+            </draggable>
+            <template v-if="!(phase.arrangements.length && phase.arrangements[0].copy)">
+
             <template v-for="arrangement in phase.arrangements">
               <tr v-bind:key="`${phase.id}_${arrangement.id}`">
                 <template v-for="header in headers">
@@ -64,13 +109,15 @@
                 </template>
               </tr>
             </template>
+
+            </template>
             <tr v-bind:key="`${phase.id}_all`">
               <th colspan="14" :style="showBorder()">{{ phase.name }}</th>
               <th :style="showBorder()">{{ phase.phase_overall.days_of_shift }}</th>
               <th :style="showBorder()">{{ phase.phase_overall.days_of_shift_human }}</th>
             </tr>
           </template>
-          </tbody>
+
         </template>
       </v-simple-table>
     </div>
@@ -92,6 +139,7 @@ window.$ = $
 import DeleteArrangement from "./DeleteArrangement";
 import CreateArrangement from "./CreateArrangement";
 import EditArrangement from "@/pages/tech_cards/components/EditArrangement";
+import draggable from "vuedraggable";
 
 export default {
   name: "DataTable",
@@ -282,12 +330,16 @@ export default {
       ],
       page: 1,
       per_page: null,
+      editingElement: null,
+      editingIndex: null,
+      editing: false,
     }
   },
   components: {
     EditArrangement,
     DeleteArrangement,
-    CreateArrangement
+    CreateArrangement,
+    draggable
   },
   methods: {
     save() {
@@ -303,7 +355,7 @@ export default {
       this.$store.commit('edit_tech_card_dialog', true)
     },
     showBorder() {
-      return {border: 'thin solid rgba(0,0,0,0.3)', height: '100px'}
+      return {border: 'thin solid rgba(0,0,0,0.3)', height: '100px', padding: '10px'}
     },
     deleteItem(item) {
       this.deletingItem = item
@@ -314,11 +366,45 @@ export default {
       this.$store.commit('phase', phase)
       this.$store.commit('index', index)
     },
+    detect(evt) {
+      this.editingElement = evt.draggedContext.element;
+      this.editingIndex = evt.draggedContext.index;
+      this.editing = false
+    },
   },
   mounted() {
   },
-  watch: {},
+  watch: {
+    tech_card: {
+      handler: function (newVal, oldVal) {
+        var element = this.editingElement;
+        for (var item of oldVal) {
+          for (var arrangement of item.arrangements) {
+            if (element && element.id && arrangement.id === element.id) {
+              this.$store.commit('phase', item.id)
+              this.$store.commit('index', this.editingIndex)
+              arrangement.row_space = this.row_space
+              if (!this.editing && arrangement.copy) {
+                this.$store.dispatch('update_tech_card_arrangement', {item: arrangement, tech_card_id: arrangement.id})
+                this.editing = true
+              }
+            }
+          }
+        }
+
+      },
+      deep: true
+    }
+  },
   computed: {
+    row_space: {
+      get() {
+        return this.$store.getters.row_space
+      },
+      set(value) {
+        this.$store.commit('row_space', value)
+      }
+    },
     tech_card() {
       return this.$store.getters.tech_card
     },
@@ -350,6 +436,10 @@ export default {
 
 .my-border {
   border: thin solid #969696;
+}
+
+th, td {
+  text-align: left;
 }
 
 .add-btn {

@@ -94,7 +94,6 @@ export default {
       tax_number: null,
       plant_type: null,
       is_done: false,
-      row_space: 60,
       deletingItem: null,
       row_spaces: [
         45, 60, 90
@@ -115,6 +114,14 @@ export default {
       },
       set(value) {
         this.$store.commit('land', value)
+      }
+    },
+    row_space: {
+      get() {
+        return this.$store.getters.row_space
+      },
+      set(value) {
+        this.$store.commit('row_space', value)
       }
     },
     loading: {

@@ -14,7 +14,8 @@ const state = {
     tech_card_arrangements: [],
     phase: 0,
     index: 0,
-    edit_item: {}
+    edit_item: {},
+    row_space: 0,
 }
 
 const getters = {
@@ -32,6 +33,7 @@ const getters = {
     phase: state => state.phase,
     index: state => state.index,
     edit_item: state => state.edit_item,
+    row_space: state => state.row_space,
 }
 
 const actions = {
@@ -254,6 +256,7 @@ const mutations = {
     phase: (state, phase) => (state.phase = phase),
     index: (state, index) => (state.index = index),
     edit_item: (state, edit_item) => (state.edit_item = edit_item),
+    row_space: (state, row_space) => (state.row_space = row_space),
 }
 
 export default {
