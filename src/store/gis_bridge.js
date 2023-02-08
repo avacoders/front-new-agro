@@ -3,7 +3,10 @@ import axios from 'axios'
 const state = {
     gis_bridge_lands: [],
     gis_bridge_lands_loading: false,
-    tech_card: [],
+    tech_card: {
+        parameters: [],
+        phases: [],
+    },
     tech_card_loading: false,
     land: 0,
     plant_type: {},
@@ -66,6 +69,7 @@ const actions = {
         }
         axios.get(`/tech_card`, {params})
             .then(response => {
+                console.log(response.data);
                 commit('tech_card', response.data)
                 commit('gis_bridge_lands_loading', false)
             }).catch(error => {

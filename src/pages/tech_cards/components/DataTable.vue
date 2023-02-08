@@ -1,125 +1,141 @@
 <template>
-  <v-card class="mt-4" v-if="tech_card.length">
+  <v-card class="mt-4" v-if="tech_card.phases.length">
     <v-card-title>
-      <v-row>
-        <v-col>
-          <b>Ер майдони:</b>
-          {{ land.properties.gis_area }} га
-        </v-col>
-      </v-row>
+<!--      <v-row>-->
+<!--        <v-col  v-for="(parameter, index) in tech_card.parameters" v-bind:key="`${index}_parameter`">-->
+<!--          <v-simple-table>-->
+<!--            <thead>-->
+<!--            <tr>-->
+<!--            </tr>-->
+<!--            </thead>-->
+<!--            <tbody>-->
+<!--            <tr>-->
+<!--              <td :style="showBorder">Технологиялар рақами</td>-->
+<!--              <td>{{ parameter.id }}</td>-->
+<!--            </tr>-->
+<!--            </tbody>-->
+<!--          </v-simple-table>-->
+<!--        </v-col>-->
+<!--      </v-row>-->
     </v-card-title>
     <div>
-      <!--      draggable-->
-      <v-simple-table
+      <v-expansion-panels>
+        <v-expansion-panel
+            v-for="phase in tech_card.phases"
+            v-bind:key="phase.id"
+        >
+          <v-expansion-panel-header>
+            {{ phase.name }}
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <v-simple-table
                 fixed-header
-          height="90vh">
-        <template v-slot:default>
-          <thead>
-          <tr>
-            <th v-for="header in headers" v-bind:key="header.value"
-                style="border: thin solid rgba(0,0,0,0.3); height: 100px">
-              {{ header.text }}
-            </th>
-          </tr>
-          </thead>
+                height="90vh">
+              <template v-slot:default>
+                <thead>
+                <tr>
+                  <th v-for="header in headers" v-bind:key="header.value"
+                      style="border: thin solid rgba(0,0,0,0.3); height: 100px">
+                    {{ header.text }}
+                  </th>
+                </tr>
+                </thead>
 
-          <template v-for="phase in tech_card">
-            <tr v-bind:key="phase.id">
-              <th colspan="21" :style="showBorder()">{{ phase.name }}</th>
-            </tr>
-            <draggable v-model="phase.arrangements" v-bind:key="`${phase.id}_draggable`" :move="detect" v-if="phase.arrangements.length && phase.arrangements[0].copy" tag="tbody">
-              <template v-for="arrangement in phase.arrangements">
-                <tr v-bind:key="`${phase.id}_${arrangement.id}`">
-                  <template v-for="header in headers">
-                    <td v-bind:key="`${header.value}_${arrangement.id}`" :style="showBorder()"
-                        style="position: relative;">
-                      {{ arrangement[header.value] }}
-                      <template v-if="['result', 'tractor_norma'].includes(header.value)">
-                        {{ arrangement.unit }}
+                <draggable v-model="phase.arrangements" v-bind:key="`${phase.id}_draggable`" :move="detect"
+                           v-if="phase.arrangements.length && phase.arrangements[0].copy" tag="tbody">
+                  <template v-for="arrangement in phase.arrangements">
+                    <tr v-bind:key="`${phase.id}_${arrangement.id}`">
+                      <template v-for="header in headers">
+                        <td v-bind:key="`${header.value}_${arrangement.id}`" :style="showBorder()"
+                            style="position: relative;">
+                          {{ arrangement[header.value] }}
+                          <template v-if="['result', 'tractor_norma'].includes(header.value)">
+                            {{ arrangement.unit }}
+                          </template>
+                          <template v-if="header.value === 'actions' && arrangement.copy">
+                            <div class="d-flex " style="gap: 4px">
+                              <v-btn
+                                  fab
+                                  elevation="0"
+                                  @click="editItem(arrangement, arrangement.index,phase.id)"
+                                  color="primary" x-small>
+                                <v-icon>mdi-pencil</v-icon>
+                              </v-btn>
+                              <v-btn
+                                  fab
+                                  @click="deleteItem(arrangement)"
+                                  elevation="0"
+                                  color="error" x-small>
+                                <v-icon>mdi-minus</v-icon>
+                              </v-btn>
+                              <v-btn
+                                  fab
+                                  elevation="0"
+                                  class="add-btn"
+                                  @click="addItem(arrangement, arrangement.index + 1 ,phase.id)"
+                                  color="success" x-small>
+                                <v-icon>mdi-plus</v-icon>
+                              </v-btn>
+                            </div>
+                          </template>
+                        </td>
                       </template>
-                      <template v-if="header.value === 'actions' && arrangement.copy">
-                        <div class="d-flex " style="gap: 4px">
-                          <v-btn
-                              fab
-                              elevation="0"
-                              @click="editItem(arrangement, arrangement.index,phase.id)"
-                              color="primary" x-small>
-                            <v-icon>mdi-pencil</v-icon>
-                          </v-btn>
-                          <v-btn
-                              fab
-                              @click="deleteItem(arrangement)"
-                              elevation="0"
-                              color="error" x-small>
-                            <v-icon>mdi-minus</v-icon>
-                          </v-btn>
-                          <v-btn
-                              fab
-                              elevation="0"
-                              class="add-btn"
-                              @click="addItem(arrangement, arrangement.index + 1 ,phase.id)"
-                              color="success" x-small>
-                            <v-icon>mdi-plus</v-icon>
-                          </v-btn>
-                        </div>
-                      </template>
-                    </td>
+                    </tr>
                   </template>
+                </draggable>
+                <template v-if="!(phase.arrangements.length && phase.arrangements[0].copy)">
+
+                  <template v-for="arrangement in phase.arrangements">
+                    <tr v-bind:key="`${phase.id}_${arrangement.id}`">
+                      <template v-for="header in headers">
+                        <td v-bind:key="`${header.value}_${arrangement.id}`" :style="showBorder()"
+                            style="position: relative;">
+                          {{ arrangement[header.value] }}
+                          <template v-if="['result', 'balance_norm'].includes(header.value)">
+                            {{ arrangement.unit }}
+                          </template>
+                          <template v-if="header.value === 'actions' && arrangement.copy">
+                            <div class="d-flex " style="gap: 4px">
+                              <v-btn
+                                  fab
+                                  elevation="0"
+                                  @click="editItem(arrangement, arrangement.index,phase.id)"
+                                  color="primary" x-small>
+                                <v-icon>mdi-pencil</v-icon>
+                              </v-btn>
+                              <v-btn
+                                  fab
+                                  @click="deleteItem(arrangement)"
+                                  elevation="0"
+                                  color="error" x-small>
+                                <v-icon>mdi-minus</v-icon>
+                              </v-btn>
+                              <v-btn
+                                  fab
+                                  elevation="0"
+                                  class="add-btn"
+                                  @click="addItem(arrangement, arrangement.index + 1 ,phase.id)"
+                                  color="success" x-small>
+                                <v-icon>mdi-plus</v-icon>
+                              </v-btn>
+                            </div>
+                          </template>
+                        </td>
+                      </template>
+                    </tr>
+                  </template>
+
+                </template>
+                <tr v-bind:key="`${phase.id}_all`">
+                  <th colspan="14" :style="showBorder()">{{ phase.name }}</th>
+                  <th :style="showBorder()">{{ phase.phase_overall.days_of_shift }}</th>
+                  <th :style="showBorder()">{{ phase.phase_overall.days_of_shift_human }}</th>
                 </tr>
               </template>
-            </draggable>
-            <template v-if="!(phase.arrangements.length && phase.arrangements[0].copy)">
-
-            <template v-for="arrangement in phase.arrangements">
-              <tr v-bind:key="`${phase.id}_${arrangement.id}`">
-                <template v-for="header in headers">
-                  <td v-bind:key="`${header.value}_${arrangement.id}`" :style="showBorder()"
-                      style="position: relative;">
-                    {{ arrangement[header.value] }}
-                    <template v-if="['result', 'balance_norm'].includes(header.value)">
-                      {{ arrangement.unit }}
-                    </template>
-                    <template v-if="header.value === 'actions' && arrangement.copy">
-                      <div class="d-flex " style="gap: 4px">
-                        <v-btn
-                            fab
-                            elevation="0"
-                            @click="editItem(arrangement, arrangement.index,phase.id)"
-                            color="primary" x-small>
-                          <v-icon>mdi-pencil</v-icon>
-                        </v-btn>
-                        <v-btn
-                            fab
-                            @click="deleteItem(arrangement)"
-                            elevation="0"
-                            color="error" x-small>
-                          <v-icon>mdi-minus</v-icon>
-                        </v-btn>
-                        <v-btn
-                            fab
-                            elevation="0"
-                            class="add-btn"
-                            @click="addItem(arrangement, arrangement.index + 1 ,phase.id)"
-                            color="success" x-small>
-                          <v-icon>mdi-plus</v-icon>
-                        </v-btn>
-                      </div>
-                    </template>
-                  </td>
-                </template>
-              </tr>
-            </template>
-
-            </template>
-            <tr v-bind:key="`${phase.id}_all`">
-              <th colspan="14" :style="showBorder()">{{ phase.name }}</th>
-              <th :style="showBorder()">{{ phase.phase_overall.days_of_shift }}</th>
-              <th :style="showBorder()">{{ phase.phase_overall.days_of_shift_human }}</th>
-            </tr>
-          </template>
-
-        </template>
-      </v-simple-table>
+            </v-simple-table>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
     </div>
     <delete-arrangement
         :deletingItem="deletingItem"
@@ -145,6 +161,48 @@ export default {
   name: "DataTable",
   data() {
     return {
+      parameters: {
+        headers: [
+          {
+            key: "tuzatish",
+            title: "Тузатиш (дала паспорти бўйича) коэффициенти",
+            element: [
+              {
+                key: "mehaniz_ish",
+                title: "Механизация иш унумига тузатиш коэффициенти"
+              },
+              {
+                key: "kul_kuchida_ish",
+                title: "Қўл кучида иш унумига тузатиш коэффиц."
+              },
+              {
+                key: "yonligiga_koef",
+                title: "Ёнилғига тузатиш коэффициенти"
+              },
+
+            ]
+          },
+          {
+            key: "discharges",
+            title: "2022 йил 1 июн нархлари бўйича сменалик иш хақи тариф сеткаси",
+            element: [
+              {
+                key: "mehaniz_ish",
+                title: "Механизация иш унумига тузатиш коэффициенти"
+              },
+              {
+                key: "kul_kuchida_ish",
+                title: "Қўл кучида иш унумига тузатиш коэффиц."
+              },
+              {
+                key: "yonligiga_koef",
+                title: "Ёнилғига тузатиш коэффициенти"
+              },
+
+            ]
+          }
+        ]
+      },
       deletingItem: {},
       editingItem: {},
       index: null,
@@ -378,7 +436,7 @@ export default {
     tech_card: {
       handler: function (newVal, oldVal) {
         var element = this.editingElement;
-        for (var item of oldVal) {
+        for (var item of oldVal.phases) {
           for (var arrangement of item.arrangements) {
             if (element && element.id && arrangement.id === element.id) {
               this.$store.commit('phase', item.id)

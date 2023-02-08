@@ -62,18 +62,18 @@
           >Тех. картани яратиш
           </v-btn>
         </div>
-        <template v-if="((selected_land && plant_type && row_space) && ( tech_card.length > 0 && tech_card[0].arrangements.length > 0))">
+        <template v-if="((selected_land && plant_type && row_space) && ( tech_card.phases.length > 0 && tech_card.phases[0].arrangements.length > 0))">
 
           <div>
             <v-btn
-                :disabled="( tech_card.length > 0 && tech_card[0].arrangements.length > 0 && tech_card[0].arrangements[0].copy) "
+                :disabled="( tech_card.phases.length > 0 && tech_card.phases[0].arrangements.length > 0 && tech_card.phases[0].arrangements[0].copy) "
                 color="success" @click="$store.dispatch('save_tech_card', {selected_land, plant_type})">
               Сақлаш
             </v-btn>
           </div>
           <div>
             <v-btn
-                :disabled="!( tech_card.length > 0 && tech_card[0].arrangements.length > 0 && tech_card[0].arrangements[0].copy) "
+                :disabled="!( tech_card.phases.length > 0 && tech_card.phases[0].arrangements.length > 0 && tech_card.phases[0].arrangements[0].copy) "
                 color="secondary" @click="$store.dispatch('cancel_tech_card', {selected_land, plant_type})">
               Бекор қилиш
             </v-btn>
