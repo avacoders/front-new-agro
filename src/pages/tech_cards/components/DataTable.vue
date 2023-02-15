@@ -1,23 +1,5 @@
 <template>
-  <v-card class="mt-4" v-if="tech_card.phases.length">
-    <v-card-title>
-<!--      <v-row>-->
-<!--        <v-col  v-for="(parameter, index) in tech_card.parameters" v-bind:key="`${index}_parameter`">-->
-<!--          <v-simple-table>-->
-<!--            <thead>-->
-<!--            <tr>-->
-<!--            </tr>-->
-<!--            </thead>-->
-<!--            <tbody>-->
-<!--            <tr>-->
-<!--              <td :style="showBorder">Технологиялар рақами</td>-->
-<!--              <td>{{ parameter.id }}</td>-->
-<!--            </tr>-->
-<!--            </tbody>-->
-<!--          </v-simple-table>-->
-<!--        </v-col>-->
-<!--      </v-row>-->
-    </v-card-title>
+  <div v-if="tech_card.phases.length">
     <div>
       <v-expansion-panels>
         <v-expansion-panel
@@ -46,7 +28,7 @@
                   <template v-for="arrangement in phase.arrangements">
                     <tr v-bind:key="`${phase.id}_${arrangement.id}`">
                       <template v-for="header in headers">
-                        <td v-bind:key="`${header.value}_${arrangement.id}`" :style="showBorder()"
+                        <td v-bind:key="`${header.value}_${phase.id}_${arrangement.id}`" :style="showBorder()"
                             style="position: relative;">
                           {{ arrangement[header.value] }}
                           <template v-if="['result', 'tractor_norma'].includes(header.value)">
@@ -88,7 +70,7 @@
                   <template v-for="arrangement in phase.arrangements">
                     <tr v-bind:key="`${phase.id}_${arrangement.id}`">
                       <template v-for="header in headers">
-                        <td v-bind:key="`${header.value}_${arrangement.id}`" :style="showBorder()"
+                        <td v-bind:key="`${header.value}_${phase.id}_${arrangement.id}`" :style="showBorder()"
                             style="position: relative;">
                           {{ arrangement[header.value] }}
                           <template v-if="['result', 'balance_norm'].includes(header.value)">
@@ -144,7 +126,7 @@
         :index="index"></create-arrangement>
     <edit-arrangement
         :editingItem="editingItem"></edit-arrangement>
-  </v-card>
+  </div>
 
 </template>
 
@@ -251,6 +233,24 @@ export default {
           sortable: false,
         },
         {
+          text: 'асосий машина сони',
+          align: 'start',
+          value: 'assosiy_mashiba_soni',
+          sortable: false,
+        },
+        {
+          text: 'қўшимча машина сони',
+          align: 'start',
+          value: 'kushimcha_mashina_soni',
+          sortable: false,
+        },
+        {
+          text: 'Бириктирилган механизатор',
+          align: 'start',
+          value: 'birictirilgan_mexanizator',
+          sortable: false,
+        },
+        {
           text: '1 гектар учун норма',
           align: 'start',
           value: 'gektar_norma',
@@ -306,8 +306,23 @@ export default {
           sortable: false,
         },
         {
-          text: 'Жалб этила-диган тех-ника ёки одам сони',
-          value: "Jalo",
+          text: 'Жалб этила-диган тех-ника трактор',
+          value: "tractor",
+          sortable: false,
+        },
+        {
+          text: 'Жалб этила-диган тех-ника трактор',
+          value: "mehanizator",
+          sortable: false,
+        },
+        {
+          text: 'Жалб этила-диган тех-ника KXM (asosiysi)',
+          value: "kxm_asosiysi",
+          sortable: false,
+        },
+        {
+          text: 'Жалб этила-диган тех-ника KXM (qo\'shimcha)',
+          value: "kxm_kushimchasi",
           sortable: false,
         },
         {

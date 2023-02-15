@@ -4,28 +4,40 @@
       <v-card-title>
         Технологик карта
       </v-card-title>
-        <search-tech-card/>
+      <search-tech-card/>
     </v-card>
     <v-card>
-      <v-tabs
-          align-with-title
-          v-model="tab"
-      >
-        <v-tabs-slider></v-tabs-slider>
+      <template v-if="lands.length && !tech_card.phases.length">
+        <map-dialog ref="mapView" :change="tab" :lands="lands"/>
+      </template>
+      <template v-else>
+        <v-card class="mt-4">
+          <v-card-title>Жадвал</v-card-title>
+        <data-table/>
 
-        <v-tab v-for="item in items" :key="item">
-          {{ item }}
-        </v-tab>
-      </v-tabs>
-      <v-tabs-items v-model="tab">
+        </v-card>
 
-        <v-tab-item :key="items[0]">
-          <data-table/>
-        </v-tab-item>
-        <v-tab-item :key="items[1]">
-          <map-dialog ref="mapView" :change="tab" :lands="lands"/>
-        </v-tab-item>
-      </v-tabs-items>
+      </template>
+
+      <!--      <v-tabs-->
+      <!--          align-with-title-->
+      <!--          v-model="tab"-->
+      <!--      >-->
+      <!--        <v-tabs-slider></v-tabs-slider>-->
+
+      <!--        <v-tab v-for="item in items" :key="item">-->
+      <!--          {{ item }}-->
+      <!--        </v-tab>-->
+      <!--      </v-tabs>-->
+      <!--      <v-tabs-items v-model="tab">-->
+
+      <!--        <v-tab-item :key="items[0]">-->
+      <!--          <data-table/>-->
+      <!--        </v-tab-item>-->
+      <!--        <v-tab-item :key="items[1]">-->
+      <!--          <map-dialog ref="mapView" :change="tab" :lands="lands"/>-->
+      <!--        </v-tab-item>-->
+      <!--      </v-tabs-items>-->
 
     </v-card>
   </div>

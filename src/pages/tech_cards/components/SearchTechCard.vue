@@ -42,11 +42,11 @@
         </div>
         <div>
           <v-select :items="lands"
-                    label="Кадастр рақами"
+                    label="Далани танлаш"
                     outlined
                     dense
                     v-model="selected_land"
-                    :item-text="(land) => land.properties.cadastral_number"
+                    :item-text="(land) => `${land.properties.gis_area.toFixed(2)} ga`"
                     return-object
                     required
                     :item-value="(plant) => plant.id"

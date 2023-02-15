@@ -1,11 +1,11 @@
 <template>
   <v-card>
     <v-card-text class="my-3" :height="200">
-      <h2 v-if="selected.feature && selected.feature.properties">
-        Кадастр рақами : <span class="ml-5">{{ selected.feature.properties.cadastral_number }}</span>
+      <h2>
+        Кадастр рақами : <span  v-if="selected.feature && selected.feature.properties && selected.feature.properties.cadastral_number" class="ml-5">{{ selected.feature.properties.cadastral_number }}</span>
       </h2>
-      <h2 v-if="selected.feature && selected.feature.properties">
-        Ер майдони : <span class="ml-5">{{ selected.feature.properties.gis_area }} га</span>
+      <h2 >
+        Ер майдони :  <span v-if="selected.feature && selected.feature.properties && selected.feature.properties.gis_area" class="ml-5">{{ selected.feature.properties.gis_area.toFixed(2) }} га</span>
       </h2>
     </v-card-text>
 
@@ -39,26 +39,6 @@
 
       </v-container>
     </v-card-text>
-
-    <v-divider></v-divider>
-
-    <v-card-actions>
-      <v-spacer></v-spacer>
-      <v-btn
-          color="secondary"
-          text
-          @click="dialog = false"
-      >
-        Бекор қилиш
-      </v-btn>
-      <v-btn
-          color="success"
-          :disabled="!selected.feature"
-          @click="selectLand"
-      >
-        Tasdiqlash
-      </v-btn>
-    </v-card-actions>
   </v-card>
 </template>
 
@@ -155,8 +135,7 @@ export default {
             debug: 0,
             style: geojsonStyle,
             onEachFeature(feature, layer) {
-              layer.on('mouseover', function (e) {
-                console.log(e.layer);
+              layer.on('mouseover', function () {
                 layer.setStyle({
                   color: "white"
                 })
@@ -180,6 +159,12 @@ export default {
       this.is_changed_map = false
     },
     clickToFeature(feature, layer) {
+      if(this.$store.getters.land && this.$store.getters.land.properties && this.$store.getters.land.properties.cadastral_number === feature.properties.cadastral_number){
+        this.$store.commit('land', 0)
+      }else {
+        this.$store.commit('land', feature)
+      }
+
       for (let geojson of this.geoJSONs) {
         geojson.setStyle({
           fillColor: '#0088ff',
@@ -218,7 +203,6 @@ export default {
       this.draw()
     },
     is_changed_map(val) {
-      console.log(val);
       if(val){
         this.draw()
       }
@@ -233,6 +217,6 @@ export default {
 }
 
 .vue2leaflet-map {
-  height: 400px;
+  height: 60vh;
 }
 </style>
