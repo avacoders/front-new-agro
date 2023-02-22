@@ -7,11 +7,12 @@
             label="ИНН"
             outlined
             dense
+            v-on:keyup.enter="$store.dispatch('get_gis_bridge_lands', {tax_number})"
             :loading="loading"
         />
       </div>
       <div>
-        <v-btn color="primary" @click="$store.dispatch('get_gis_bridge_lands', {tax_number})">Излаш</v-btn>
+        <v-btn type="submit" color="primary" @click="$store.dispatch('get_gis_bridge_lands', {tax_number})">Излаш</v-btn>
       </div>
       <template v-if="lands.length">
         <div>
@@ -66,7 +67,7 @@
 
           <div>
             <v-btn
-                :disabled="( tech_card.phases.length > 0 && tech_card.phases[0].arrangements.length > 0 && tech_card.phases[0].arrangements[0].copy) "
+                :disabled="( tech_card.phases && tech_card.phases.length > 0 && tech_card.phases[0].arrangements && tech_card.phases[0].arrangements.length > 0 && tech_card.phases[0].arrangements[0].copy) "
                 color="success" @click="$store.dispatch('save_tech_card', {selected_land, plant_type})">
               Сақлаш
             </v-btn>

@@ -14,11 +14,13 @@ const state = {
     delete_tech_card_dialog: false,
     add_tech_card_dialog: false,
     edit_tech_card_dialog: false,
+    delete_group_dialog: false,
     tech_card_arrangements: [],
     phase: 0,
     index: 0,
     edit_item: {},
     row_space: 0,
+    group_index: 0,
 }
 
 const getters = {
@@ -37,12 +39,14 @@ const getters = {
     index: state => state.index,
     edit_item: state => state.edit_item,
     row_space: state => state.row_space,
+    delete_group_dialog: state => state.delete_group_dialog,
+    group_index: state => state.group_index,
 }
 
 const actions = {
     get_gis_bridge_lands({commit}, params) {
         commit('gis_bridge_lands_loading', true)
-        axios.get(`https://api.agro.uz/gis_bridge/kadastr-by-taxnumber`, {
+        axios.get(`https://api.agro.uz/gis_bridge/tech-map`, {
             headers: {
                 'Authorization': "Token 140d96f6c234d5ea7838aa43729b21fe97a6"
             },
@@ -106,7 +110,10 @@ const actions = {
         axios.get(`/delete_all_copies`, {params})
             .then(() => {
                 commit('gis_bridge_lands_loading', false)
-                commit('tech_card', [])
+                commit('tech_card',{
+                    parameters: [],
+                    phases: [],
+                })
             }).catch(error => {
             console.log(error);
             commit('gis_bridge_lands_loading', false)
@@ -133,6 +140,7 @@ const actions = {
             .then((result) => {
                 commit('gis_bridge_lands_loading', false)
                 commit('tech_card_arrangements', result.data)
+                console.log(result.data);
             }).catch(error => {
             console.log(error);
             commit('gis_bridge_lands_loading', false)
@@ -150,7 +158,7 @@ const actions = {
         })
     },
 
-    add_tech_card_arrangement({commit, dispatch}, {item}) {
+    add_tech_card_arrangement({commit, dispatch}, {item, group_index}) {
         var data = new FormData()
         data.append("start_time", item.start_time);
         data.append("end_time", item.end_time);
@@ -165,7 +173,7 @@ const actions = {
         data.append("gektar_norma", item.gektar_norma);
         data.append("square_procent", item.square_procent);
         data.append("row_space", item.row_space);
-        data.append("shift_continiyty", item.shift_continuity);
+        data.append("shift_continuity", item.shift_continuity);
         data.append("phase_id", state.phase);
         data.append("smenalik_koeffitsiyenti", item.smenalik_koeffitsiyenti);
         data.append("worker", item.worker);
@@ -175,6 +183,7 @@ const actions = {
         data.append("cadastor", state.land.properties.cadastral_number);
         data.append("gis_area", state.land.properties.gis_area);
         data.append("arrangement_id", item.id);
+        data.append("group_index",group_index);
 
         axios.post("/add_copy", data)
             .then(() => {
@@ -221,6 +230,21 @@ const actions = {
             commit('gis_bridge_lands_loading', false)
         })
 
+    },
+    delete_group({commit, dispatch}, {group_index, phase_id}) {
+        var data = new FormData()
+        data.append("phase_id", phase_id);
+        data.append("group_index", group_index);
+        data.append("cadastor",state.land.properties.cadastral_number );
+        axios.post("/delete_by_group", data)
+            .then(() => {
+                commit('delete_group_dialog', false)
+                dispatch('get_tech_card', {selected_land: state.land, plant_type: state.plant_type})
+            }).catch(error => {
+            console.log(error);
+            commit('gis_bridge_lands_loading', false)
+        })
+
     }
 
 
@@ -261,6 +285,8 @@ const mutations = {
     index: (state, index) => (state.index = index),
     edit_item: (state, edit_item) => (state.edit_item = edit_item),
     row_space: (state, row_space) => (state.row_space = row_space),
+    delete_group_dialog: (state, delete_group_dialog) => (state.delete_group_dialog = delete_group_dialog),
+    group_index: (state, group_index) => (state.group_index = group_index),
 }
 
 export default {

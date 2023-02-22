@@ -7,7 +7,7 @@
       <search-tech-card/>
     </v-card>
     <v-card>
-      <template v-if="lands.length && !tech_card.phases.length">
+      <template v-if="lands.length && tech_card.phases && !tech_card.phases.length">
         <map-dialog ref="mapView" :change="tab" :lands="lands"/>
       </template>
       <template v-else>

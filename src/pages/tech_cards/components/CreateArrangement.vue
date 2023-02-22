@@ -79,6 +79,13 @@ import InputByType from "@/pages/tech_cards/components/InputByType";
 export default {
   name: "CreateArrangement",
   components: {InputByType},
+  props: {
+
+    group_index: {
+      type: Number,
+      default: 0
+    },
+  },
 
 
   data() {
@@ -221,6 +228,7 @@ export default {
     save() {
       this.$store.dispatch("add_tech_card_arrangement", {
         item: this.item,
+        group_index: this.group_index
       })
     }
   }

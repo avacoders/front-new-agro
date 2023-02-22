@@ -16,19 +16,38 @@
               <template v-slot:default>
                 <thead>
                 <tr>
-                  <th v-for="header in headers" v-bind:key="header.value"
-                      style="border: thin solid rgba(0,0,0,0.3); height: 100px">
-                    {{ header.text }}
-                  </th>
+                  <template v-for="header in headers">
+                    <th v-if="![ 'checkbox', 'actions' ].includes(header.value) && !(phase.arrangements.length && phase.arrangements[0].copy) || (phase.arrangements.length && phase.arrangements[0].copy)"  v-bind:key="header.value"
+                        style="border: thin solid rgba(0,0,0,0.3); height: 100px">
+                      {{ header.text }}
+                    </th>
+                  </template>
                 </tr>
                 </thead>
 
                 <draggable v-model="phase.arrangements" v-bind:key="`${phase.id}_draggable`" :move="detect"
                            v-if="phase.arrangements.length && phase.arrangements[0].copy" tag="tbody">
-                  <template v-for="arrangement in phase.arrangements">
+                  <template v-for="(arrangement, index) in phase.arrangements">
                     <tr v-bind:key="`${phase.id}_${arrangement.id}`">
                       <template v-for="header in headers">
-                        <td v-bind:key="`${header.value}_${phase.id}_${arrangement.id}`" :style="showBorder()"
+                        <template
+                            v-if="header.value == 'checkbox' &&( index != 0 && arrangement.group_index != phase.arrangements[index - 1].group_index || index == 0 && phase.arrangements[index].group_index)">
+                          <td v-bind:key="`${header.value}_${phase.id}_${arrangement.id}_${index}`"
+                              :rowspan="getGroupCount(phase.arrangements, arrangement.group_index)"
+                              :style="showBorder()">
+                            <v-btn
+                                fab
+                                @click="delete_group(arrangement.group_index, phase.id)"
+                                elevation="0"
+                                color="error" x-small>
+                              <v-icon>mdi-minus</v-icon>
+                            </v-btn>
+                          </td>
+                        </template>
+
+                        <td v-bind:key="`${header.value}_${phase.id}_${arrangement.id}`"
+                            v-if="header.value != 'checkbox'" :style="showBorder()"
+                            :class="`color-` + arrangement.group_index"
                             style="position: relative;">
                           {{ arrangement[header.value] }}
                           <template v-if="['result', 'tractor_norma'].includes(header.value)">
@@ -39,7 +58,7 @@
                               <v-btn
                                   fab
                                   elevation="0"
-                                  @click="editItem(arrangement, arrangement.index,phase.id)"
+                                  @click="editItem(arrangement, arrangement.index,phase.id )"
                                   color="primary" x-small>
                                 <v-icon>mdi-pencil</v-icon>
                               </v-btn>
@@ -70,7 +89,8 @@
                   <template v-for="arrangement in phase.arrangements">
                     <tr v-bind:key="`${phase.id}_${arrangement.id}`">
                       <template v-for="header in headers">
-                        <td v-bind:key="`${header.value}_${phase.id}_${arrangement.id}`" :style="showBorder()"
+                        <td v-bind:key="`${header.value}_${phase.id}_${arrangement.id}`"
+                            v-if="!['checkbox', 'actions'].includes(header.value)" :style="showBorder()"
                             style="position: relative;">
                           {{ arrangement[header.value] }}
                           <template v-if="['result', 'balance_norm'].includes(header.value)">
@@ -123,9 +143,12 @@
         :deletingItem="deletingItem"
     ></delete-arrangement>
     <create-arrangement
-        :index="index"></create-arrangement>
+        :index="index" :group_index="group_index"></create-arrangement>
     <edit-arrangement
         :editingItem="editingItem"></edit-arrangement>
+    <delete-group
+        text="text" :deletingItem="deletingGroup"
+    ></delete-group>
   </div>
 
 </template>
@@ -135,6 +158,7 @@ import $ from "jquery";
 
 window.$ = $
 import DeleteArrangement from "./DeleteArrangement";
+import DeleteGroup from "./DeleteGroup";
 import CreateArrangement from "./CreateArrangement";
 import EditArrangement from "@/pages/tech_cards/components/EditArrangement";
 import draggable from "vuedraggable";
@@ -143,6 +167,8 @@ export default {
   name: "DataTable",
   data() {
     return {
+      selecteds: {},
+      deletingGroup: null,
       parameters: {
         headers: [
           {
@@ -190,6 +216,12 @@ export default {
       index: null,
       search: '',
       headers: [
+        {
+          text: '',
+          align: 'start',
+          sortable: false,
+          value: 'checkbox',
+        },
         {
           text: '',
           align: 'start',
@@ -406,15 +438,25 @@ export default {
       editingElement: null,
       editingIndex: null,
       editing: false,
+      group_index: 0,
     }
   },
   components: {
     EditArrangement,
     DeleteArrangement,
     CreateArrangement,
-    draggable
+    draggable,
+    DeleteGroup
   },
   methods: {
+    getGroupCount(array, group_index) {
+      let count = 0
+      for (let i = 0; i < array.length; i++) {
+        if (array[i].group_index == group_index)
+          count++
+      }
+      return count
+    },
     save() {
       this.$store.commit('tech_card_loading', true)
       this.$store.dispatch('save_tech_card', this.tech_card).then(() => {
@@ -425,6 +467,7 @@ export default {
       this.editingItem = item
       this.$store.commit('phase', phase)
       this.$store.commit('index', index)
+      this.$store.commit('group_index', item.group_index)
       this.$store.commit('edit_tech_card_dialog', true)
     },
     showBorder() {
@@ -434,10 +477,18 @@ export default {
       this.deletingItem = item
       this.$store.commit('delete_tech_card_dialog', true)
     },
+    delete_group(group_index, phase) {
+      this.deletingGroup = {
+        group_index: group_index,
+        phase: phase,
+      }
+      this.$store.commit('delete_group_dialog', true)
+    },
     addItem(item, index, phase) {
       this.$store.commit('add_tech_card_dialog', true)
       this.$store.commit('phase', phase)
       this.$store.commit('index', index)
+      this.group_index = item.group_index
     },
     detect(evt) {
       this.editingElement = evt.draggedContext.element;
@@ -478,8 +529,13 @@ export default {
         this.$store.commit('row_space', value)
       }
     },
-    tech_card() {
-      return this.$store.getters.tech_card
+    tech_card: {
+      get() {
+        return this.$store.getters.tech_card
+      },
+      set(value) {
+        this.$store.commit('tech_card', value)
+      }
     },
     loading() {
       return this.$store.getters.tech_card_loading
@@ -514,6 +570,75 @@ export default {
 th, td {
   text-align: left;
 }
+
+.color-1 {
+  background-color: #f2f2f2;
+}
+
+.color-2 {
+  background-color: #dc7272;
+}
+
+.color-3 {
+  background-color: #cef1b6;
+}
+
+.color-4 {
+  background-color: #b6c7f1;
+}
+
+.color-5 {
+  background-color: #68e7e3;
+}
+
+.color-6 {
+  background-color: #5e5bc2;
+}
+
+.color-7 {
+  background-color: #d964e1;
+}
+
+.color-8 {
+  background-color: #f8b938;
+}
+
+.color-9 {
+  background-color: #2dd3a1;
+}
+
+.color-10 {
+  background-color: #699b3b;
+}
+
+.color-11 {
+  background-color: #8b6ce1;
+}
+
+.color-12 {
+  background-color: #e53655;
+}
+
+.color-13 {
+  background-color: #48e536;
+}
+
+.color-14 {
+  background-color: #d07184;
+}
+
+.color-15 {
+  background-color: #795cef;
+}
+
+.color-16 {
+  background-color: #ffffff;
+}
+
+.color-17 {
+  background-color: #e5d636;
+}
+
 
 .add-btn {
   position: absolute;
