@@ -6,6 +6,7 @@ import mfies from "@/store/mfies";
 import arrangements from "@/store/arrangements";
 import plant_types from "@/store/plant_types";
 import gis_bridge from "@/store/gis_bridge";
+import agronom from "@/store/agronom";
 
 Vue.use(Vuex)
 
@@ -17,7 +18,8 @@ const store = new Vuex.Store({
         mfies,
         arrangements,
         plant_types,
-        gis_bridge
+        gis_bridge,
+        agronom
     },
     state:{
         title: 'Regions',

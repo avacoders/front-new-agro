@@ -29,6 +29,17 @@ const actions = {
                 console.log(error)
             })
     },
+    getDistrictsByRegionCode({commit}, params) {
+        axios.get('/districts_by_code', {params})
+            .then(response => {
+                commit('set_districts', response.data)
+                commit('districts_loading', false)
+            })
+            .catch(error => {
+                commit('districts_loading', false)
+                console.log(error)
+            })
+    },
     storeDistrict({commit, dispatch}, params) {
         commit('districts_loading', true)
         var data = new FormData()

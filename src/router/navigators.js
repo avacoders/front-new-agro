@@ -30,6 +30,11 @@ const navigators = [
         title: "Технологик карта",
         icon: "mdi-tractor",
         route: "tech_cards.index"
+    },
+    {
+        title: "Агроном картаси",
+        icon: "mdi-tractor",
+        route: "agronom.index"
     }
 
 ];

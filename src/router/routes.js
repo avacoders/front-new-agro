@@ -14,6 +14,11 @@ const routes = [
         name: 'tech_cards.index',
         component: () => import('@/pages/tech_cards/TechCardIndex'),
     },
+    {
+        path: '/agronom-cards',
+        name: 'agronom.index',
+        component: () => import('@/pages/agronom/AgronomIndex'),
+    },
 
     ...regions,
     ...districts,
