@@ -174,7 +174,7 @@ const actions = {
         data.append("discharge_human", item.discharge_human);
         data.append("gektar_norma", item.gektar_norma);
         data.append("square_procent", item.square_procent);
-        data.append("row_space", item.row_space);
+        data.append("row_space", state.row_space);
         data.append("shift_continuity", item.shift_continuity);
         data.append("phase_id", state.phase);
         data.append("smenalik_koeffitsiyenti", item.smenalik_koeffitsiyenti);
@@ -210,7 +210,7 @@ const actions = {
         data.append("discharge_human", item.discharge_human);
         data.append("gektar_norma", item.gektar_norma);
         data.append("square_procent", item.square_procent);
-        data.append("row_space", item.row_space);
+        data.append("row_space", state.row_space);
         data.append("shift_continuity", item.shift_continuity);
         data.append("phase_id", state.phase);
         data.append("smenalik_koeffitsiyenti", item.smenalik_koeffitsiyenti);
