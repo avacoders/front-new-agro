@@ -70,6 +70,7 @@ const actions = {
             ekin_type_id: plant_type.id,
             gis_area: selected_land.properties.gis_area,
             cadastor: selected_land.properties.cadastral_number,
+            district_code: selected_land.properties.soato_code,
         }
         axios.get(`/tech_card`, {params})
             .then(response => {
@@ -89,6 +90,7 @@ const actions = {
         data.append('ekin_type_id', plant_type.id)
         data.append('gis_area', selected_land.properties.gis_area)
         data.append('cadastor', selected_land.properties.cadastral_number)
+        data.append('district_code', selected_land.properties.soato_code)
         axios.post(`/save_tech_card`, data)
             .then(() => {
                 commit('gis_bridge_lands_loading', false)
@@ -136,7 +138,7 @@ const actions = {
     },
     get_tech_card_arrangements({commit},) {
         commit('gis_bridge_lands_loading', true)
-        axios.get(`/add_copy`, {params: {ekin_type_id: state.plant_type.id}})
+        axios.get(`/add_copy`, {params: {ekin_type_id: state.plant_type.id, phase_id: state.phase}})
             .then((result) => {
                 commit('gis_bridge_lands_loading', false)
                 commit('tech_card_arrangements', result.data)

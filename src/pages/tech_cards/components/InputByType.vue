@@ -30,6 +30,15 @@
         ></v-date-picker>
       </v-menu>
     </template>
+    <template v-if="type === 'text'">
+                                <v-text-field
+                                    dense
+                                    elevation="0"
+                                    :label="label"
+                                    v-model="modelValue"
+                                    outlined
+                                    color="primary" x-small></v-text-field>
+    </template>
     <template v-if="type === 'number'">
       <v-text-field outlined dense v-model="modelValue" type="number"></v-text-field>
     </template>
@@ -70,6 +79,10 @@ export default {
     index: {
       type: Number,
       default: 0
+    },
+    label: {
+      type: String,
+      default: ''
     },
     phase: {
       type: Number,

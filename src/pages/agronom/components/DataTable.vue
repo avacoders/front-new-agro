@@ -1,85 +1,87 @@
 <template>
-  <div v-if="tech_card.length">
-    <div>
-      <v-simple-table
-          fixed-header
-          height="90vh">
-        <template v-slot:default>
-          <thead>
-          <tr>
-            <template v-for="header in headers">
-              <th v-if="![ 'checkbox', 'actions' ].includes(header.value) && !(phase.arrangements.length && phase.arrangements[0].copy) || (phase.arrangements.length && phase.arrangements[0].copy)"  v-bind:key="header.value"
-                  style="border: thin solid rgba(0,0,0,0.3); height: 100px">
-                {{ header.text }}
-              </th>
-            </template>
-          </tr>
-          </thead>
-
-          <draggable v-model="tech_card" :move="detect"
-                     v-if="tech_card.length" tag="tbody">
-            <template v-for="(arrangement, index) in tech_card">
-              <tr v-bind:key="`arrangement_${arrangement.id}`">
+  <div v-if="tech_card.phases.length">
+    <v-expansion-panels v-if="tech_card.phases.length">
+      <v-expansion-panel
+          v-for="phase in tech_card.phases"
+          v-bind:key="phase.id"
+      >
+        <v-expansion-panel-header>
+          {{ phase.name }}
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <v-simple-table
+              fixed-header
+              height="90vh">
+            <template v-slot:default>
+              <thead>
+              <tr>
                 <template v-for="header in headers">
-                  <template
-                      v-if="header.value == 'checkbox' &&( index != 0 && arrangement.group_index != phase.arrangements[index - 1].group_index || index == 0 && phase.arrangements[index].group_index)">
-                    <td v-bind:key="`${header.value}_${phase.id}_${arrangement.id}_${index}`"
-                        :rowspan="getGroupCount(phase.arrangements, arrangement.group_index)"
-                        :style="showBorder()">
-                      <v-btn
-                          fab
-                          @click="delete_group(arrangement.group_index, phase.id)"
-                          elevation="0"
-                          color="error" x-small>
-                        <v-icon>mdi-minus</v-icon>
-                      </v-btn>
-                    </td>
-                  </template>
-
-                  <td v-bind:key="`${header.value}_${phase.id}_${arrangement.id}`"
-                      v-if="header.value != 'checkbox'" :style="showBorder()"
-                      :class="`color-` + arrangement.group_index"
-                      style="position: relative;">
-                    {{ arrangement[header.value] }}
-                    <template v-if="['result', 'tractor_norma'].includes(header.value)">
-                      {{ arrangement.unit }}
-                    </template>
-                    <template v-if="header.value === 'actions' && arrangement.copy">
-                      <div class="d-flex " style="gap: 4px">
-                        <v-btn
-                            fab
-                            elevation="0"
-                            @click="editItem(arrangement, arrangement.index,phase.id )"
-                            color="primary" x-small>
-                          <v-icon>mdi-pencil</v-icon>
-                        </v-btn>
-                        <v-btn
-                            fab
-                            @click="deleteItem(arrangement)"
-                            elevation="0"
-                            color="error" x-small>
-                          <v-icon>mdi-minus</v-icon>
-                        </v-btn>
-                        <v-btn
-                            fab
-                            elevation="0"
-                            class="add-btn"
-                            @click="addItem(arrangement, arrangement.index + 1 ,phase.id)"
-                            color="success" x-small>
-                          <v-icon>mdi-plus</v-icon>
-                        </v-btn>
-                      </div>
-                    </template>
-                  </td>
+                  <th v-bind:key="`${phase.id}_${header.value}`"
+                      style="border: thin solid rgba(0,0,0,0.3); height: 100px">
+                    {{ header.text }}
+                  </th>
                 </template>
               </tr>
+              </thead>
+              <draggable v-model="phase.arrangements" v-bind:key="`${phase.id}_draggable`" :move="detect"
+                         v-if="phase.arrangements.length" tag="tbody">
+                <template v-for="(arrangement) in phase.arrangements">
+                  <tr v-bind:key="`${phase.id}_${arrangement.id}`">
+                    <template v-for="header in headers">
+
+                      <td v-bind:key="`${header.value}_${phase.id}_${arrangement.id}`"
+                          v-if="header.value != 'checkbox'" :style="showBorder()"
+                          :class="`color-` + arrangement.group_index"
+                          style="position: relative;">
+                        <template v-if="editingItem.id != arrangement.id">
+                          {{ arrangement[header.value] }}
+                        </template>
+                        <template v-if="editingItem.id == arrangement.id && header.value != 'actions'">
+                          <input-by-type
+                              v-model="editingItem[header.value]"
+                              :item="editingItem"
+                              :index="index"
+                              :label="header.text"
+                              :phase="phase.id"
+                              :type="header.type"></input-by-type>
+                        </template>
+
+                        <template v-if="header.value === 'actions'">
+                          <template v-if="editingItem.id != arrangement.id">
+                            <div class="d-flex " style="gap: 4px">
+                              <v-btn
+                                  fab
+                                  elevation="0"
+                                  @click="editItem(arrangement)"
+                                  color="primary" x-small>
+                                <v-icon>mdi-pencil</v-icon>
+                              </v-btn>
+                            </div>
+                          </template>
+                          <template v-if="editingItem.id == arrangement.id">
+                            <div class="d-flex " style="gap: 4px">
+                              <v-btn
+                                  fab
+                                  elevation="0"
+                                  @click="save()"
+                                  :disabled="loading"
+                                  :loading="loading"
+                                  color="success" x-small>
+                                <v-icon>mdi-content-save</v-icon>
+                              </v-btn>
+                            </div>
+                          </template>
+                        </template>
+                      </td>
+                    </template>
+                  </tr>
+                </template>
+              </draggable>
             </template>
-          </draggable>
-        </template>
-      </v-simple-table>
-
-    </div>
-
+          </v-simple-table>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-expansion-panels>
   </div>
 
 </template>
@@ -89,6 +91,7 @@ import $ from "jquery";
 
 window.$ = $
 import draggable from "vuedraggable";
+import InputByType from "@/pages/tech_cards/components/InputByType";
 
 export default {
   name: "DataTable",
@@ -102,28 +105,44 @@ export default {
       search: '',
       headers: [
         {
+          text: '',
+          align: 'start',
+          sortable: false,
+          value: 'actions',
+          editable: false,
+        },
+        {
           text: 'Агротехник тадбир номи',
           align: 'start',
           sortable: false,
           value: 'name',
+          type: "text",
+          editable: true,
+
         },
         {
           sortable: false,
-          text: 'бошла-ниши',
+          text: 'Агротехник тадбир бошланиши',
           align: 'start',
           value: 'start_time',
+          type: "date",
+          editable: true,
         },
         {
-          text: 'тугаши',
+          text: 'Агротехник тадбир тугаши',
           align: 'start',
           value: 'end_time',
           sortable: false,
+          type: "date",
+          editable: true,
         },
         {
-          text: 'давомийлиги',
+          text: 'Агротехник тадбир давомийлиги',
           align: 'start',
-          value: 'number_of_days',
+          value: 'continuity',
           sortable: false,
+          type: "number",
+          editable: true,
         }
       ],
       page: 1,
@@ -136,6 +155,7 @@ export default {
   },
   components: {
     draggable,
+    InputByType
   },
   methods: {
     getGroupCount(array, group_index) {
@@ -146,38 +166,25 @@ export default {
       }
       return count
     },
+
     save() {
-      this.$store.commit('tech_card_loading', true)
-      this.$store.dispatch('save_tech_card', this.tech_card).then(() => {
-        this.$store.commit('tech_card_loading', false)
+      var params = {
+        id: this.editingItem.id,
+        name: this.editingItem.name,
+        start_time: this.editingItem.start_time,
+        end_time: this.editingItem.end_time,
+        continuity: this.editingItem.continuity,
+      }
+      this.$store.dispatch('saveTechCard', params).then(() => {
+        this.editingItem = {}
+        this.$store.dispatch('generate_datetimes', {district_code: this.district.district_code, plant_id: this.plant_type.id} )
       })
     },
-    editItem(item, index, phase) {
+    editItem(item) {
       this.editingItem = item
-      this.$store.commit('phase', phase)
-      this.$store.commit('index', index)
-      this.$store.commit('group_index', item.group_index)
-      this.$store.commit('edit_tech_card_dialog', true)
     },
     showBorder() {
       return {border: 'thin solid rgba(0,0,0,0.3)', height: '100px', padding: '10px'}
-    },
-    deleteItem(item) {
-      this.deletingItem = item
-      this.$store.commit('delete_tech_card_dialog', true)
-    },
-    delete_group(group_index, phase) {
-      this.deletingGroup = {
-        group_index: group_index,
-        phase: phase,
-      }
-      this.$store.commit('delete_group_dialog', true)
-    },
-    addItem(item, index, phase) {
-      this.$store.commit('add_tech_card_dialog', true)
-      this.$store.commit('phase', phase)
-      this.$store.commit('index', index)
-      this.group_index = item.group_index
     },
     detect(evt) {
       this.editingElement = evt.draggedContext.element;
@@ -189,21 +196,21 @@ export default {
   },
   watch: {
     tech_card: {
-      handler: function (newVal, oldVal) {
-        var element = this.editingElement;
-        for (var item of oldVal.phases) {
-          for (var arrangement of item.arrangements) {
-            if (element && element.id && arrangement.id === element.id) {
-              this.$store.commit('phase', item.id)
-              this.$store.commit('index', this.editingIndex)
-              arrangement.row_space = this.row_space
-              if (!this.editing && arrangement.copy) {
-                this.$store.dispatch('update_tech_card_arrangement', {item: arrangement, tech_card_id: arrangement.id})
-                this.editing = true
-              }
-            }
-          }
-        }
+      handler: function () {
+        // var element = this.editingElement;
+        // for (var item of oldVal.phases) {
+        //   for (var arrangement of item.arrangements) {
+        //     if (element && element.id && arrangement.id === element.id) {
+        //       this.$store.commit('phase', item.id)
+        //       this.$store.commit('index', this.editingIndex)
+        //       arrangement.row_space = this.row_space
+        //       if (!this.editing && arrangement.copy) {
+        //         this.$store.dispatch('update_tech_card_arrangement', {item: arrangement, tech_card_id: arrangement.id})
+        //         this.editing = true
+        //       }
+        //     }
+        //   }
+        // }
 
       },
       deep: true
@@ -227,7 +234,7 @@ export default {
       }
     },
     loading() {
-      return this.$store.getters.tech_card_loading
+      return this.$store.getters.agronom_tech_card_loading
     },
     land: {
       get() {
@@ -239,10 +246,18 @@ export default {
     },
     plant_type: {
       get() {
-        return this.$store.getters.plant_type
+        return this.$store.getters.agronom_plant_type
       },
       set(value) {
-        this.$store.commit('plant_type', value)
+        this.$store.commit('agronom_plant_type', value)
+      }
+    },
+    district: {
+      get() {
+        return this.$store.getters.agronom_district
+      },
+      set(value) {
+        this.$store.commit('agronom_district', value)
       }
     },
   }

@@ -63,11 +63,9 @@ export default {
   data() {
     return {
       tax_number: null,
-      plant_type: null,
       is_done: false,
       deletingItem: null,
       region: {},
-      district: {},
       row_spaces: [
         45, 60, 90
       ],
@@ -90,6 +88,22 @@ export default {
     },
   },
   computed: {
+    plant_type: {
+      get() {
+        return this.$store.getters.agronom_plant_type
+      },
+      set(value) {
+        this.$store.commit('agronom_plant_type', value)
+      }
+    },
+    district: {
+      get() {
+        return this.$store.getters.agronom_district
+      },
+      set(value) {
+        this.$store.commit('agronom_district', value)
+      }
+    },
     selected_land: {
       get() {
         return this.$store.getters.land
