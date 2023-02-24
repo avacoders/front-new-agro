@@ -1,5 +1,5 @@
 <template>
-  <div v-if="tech_card.phases.length">
+  <div >
     <v-expansion-panels v-if="tech_card.phases.length">
       <v-expansion-panel
           v-for="phase in tech_card.phases"
@@ -24,7 +24,7 @@
               </tr>
               </thead>
               <draggable v-model="phase.arrangements" v-bind:key="`${phase.id}_draggable`" :move="detect"
-                         v-if="phase.arrangements.length" tag="tbody">
+                         v-if="phase.arrangements && phase.arrangements.length" tag="tbody">
                 <template v-for="(arrangement) in phase.arrangements">
                   <tr v-bind:key="`${phase.id}_${arrangement.id}`">
                     <template v-for="header in headers">
@@ -158,14 +158,6 @@ export default {
     InputByType
   },
   methods: {
-    getGroupCount(array, group_index) {
-      let count = 0
-      for (let i = 0; i < array.length; i++) {
-        if (array[i].group_index == group_index)
-          count++
-      }
-      return count
-    },
 
     save() {
       var params = {
