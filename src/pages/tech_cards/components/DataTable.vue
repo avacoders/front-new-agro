@@ -1,5 +1,6 @@
 <template>
   <div v-if="tech_card.phases.length">
+
     <div>
       <v-expansion-panels>
         <v-expansion-panel
@@ -17,7 +18,8 @@
                 <thead>
                 <tr>
                   <template v-for="header in headers">
-                    <th v-if="![ 'checkbox', 'actions' ].includes(header.value) && !(phase.arrangements.length && phase.arrangements[0].copy) || (phase.arrangements.length && phase.arrangements[0].copy)"  v-bind:key="header.value"
+                    <th v-if="![ 'checkbox', 'actions' ].includes(header.value) && !(phase.arrangements.length && phase.arrangements[0].copy) || (phase.arrangements.length && phase.arrangements[0].copy)"
+                        v-bind:key="header.value"
                         style="border: thin solid rgba(0,0,0,0.3); height: 100px">
                       {{ header.text }}
                     </th>
@@ -169,48 +171,6 @@ export default {
     return {
       selecteds: {},
       deletingGroup: null,
-      parameters: {
-        headers: [
-          {
-            key: "tuzatish",
-            title: "Тузатиш (дала паспорти бўйича) коэффициенти",
-            element: [
-              {
-                key: "mehaniz_ish",
-                title: "Механизация иш унумига тузатиш коэффициенти"
-              },
-              {
-                key: "kul_kuchida_ish",
-                title: "Қўл кучида иш унумига тузатиш коэффиц."
-              },
-              {
-                key: "yonligiga_koef",
-                title: "Ёнилғига тузатиш коэффициенти"
-              },
-
-            ]
-          },
-          {
-            key: "discharges",
-            title: "2022 йил 1 июн нархлари бўйича сменалик иш хақи тариф сеткаси",
-            element: [
-              {
-                key: "mehaniz_ish",
-                title: "Механизация иш унумига тузатиш коэффициенти"
-              },
-              {
-                key: "kul_kuchida_ish",
-                title: "Қўл кучида иш унумига тузатиш коэффиц."
-              },
-              {
-                key: "yonligiga_koef",
-                title: "Ёнилғига тузатиш коэффициенти"
-              },
-
-            ]
-          }
-        ]
-      },
       deletingItem: {},
       editingItem: {},
       index: null,

@@ -142,7 +142,6 @@ const actions = {
             .then((result) => {
                 commit('gis_bridge_lands_loading', false)
                 commit('tech_card_arrangements', result.data)
-                console.log(result.data);
             }).catch(error => {
             console.log(error);
             commit('gis_bridge_lands_loading', false)
