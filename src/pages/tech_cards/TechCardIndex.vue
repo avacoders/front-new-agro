@@ -12,7 +12,7 @@
         <map-dialog ref="mapView" :change="tab" :lands="lands"/>
       </template>
 
-      <template v-else>
+      <template v-if="lands.length && tech_card.phases && tech_card.phases.length">
         <v-card class="mt-4">
           <v-card-text>
             <v-row>
