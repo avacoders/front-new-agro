@@ -219,7 +219,8 @@ const actions = {
         data.append("spec_formula", item.spec_formula);
         data.append("cadastor", state.land.properties.cadastral_number);
         data.append("gis_area", state.land.properties.gis_area);
-        data.append("arrangement_id", item.id);
+        data.append("group_index", state.group_index);
+        data.append("arrangement_id", item.arrangement_id);
         data.append("id", tech_card_id);
 
         axios.post("/edit_arr_copy", data)

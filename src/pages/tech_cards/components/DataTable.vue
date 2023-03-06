@@ -396,6 +396,7 @@ export default {
       page: 1,
       per_page: null,
       editingElement: null,
+      oldElement: null,
       editingIndex: null,
       editing: false,
       group_index: 0,
@@ -454,6 +455,7 @@ export default {
       this.editingElement = evt.draggedContext.element;
       this.editingIndex = evt.draggedContext.index;
       this.editing = false
+      this.oldElement = evt.relatedContext.element;
     },
   },
   mounted() {
@@ -467,6 +469,7 @@ export default {
             if (element && element.id && arrangement.id === element.id) {
               this.$store.commit('phase', item.id)
               this.$store.commit('index', this.editingIndex)
+              this.$store.commit('group_index', this.oldElement.group_index)
               arrangement.row_space = this.row_space
               if (!this.editing && arrangement.copy) {
                 this.$store.dispatch('update_tech_card_arrangement', {item: arrangement, tech_card_id: arrangement.id})
