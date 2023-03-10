@@ -15,60 +15,60 @@
         <v-btn type="submit" color="primary" @click="$store.dispatch('get_gis_bridge_lands', {tax_number})">Излаш</v-btn>
       </div>
       <template v-if="lands.length">
-        <div>
-          <v-select :items="plant_types"
-                    label="Экин тури"
-                    outlined
-                    dense
-                    v-model="plant_type"
-                    :item-text="(plant) => plant.name_uz"
-                    return-object
-                    required
-                    :item-value="(plant) => plant.id"
-                    :rules="[rules.required]"
-          >
-          </v-select>
-        </div>
-        <div>
-          <v-select :items="row_spaces"
-                    label="Қатор оралиғи"
-                    outlined
-                    v-model="row_space"
-                    return-object
-                    dense
-                    required
-                    :rules="[rules.required]"
-          >
-          </v-select>
-        </div>
-        <div>
-          <v-select :items="lands"
-                    label="Далани танлаш"
-                    outlined
-                    dense
-                    v-model="selected_land"
-                    :item-text="(land) => `${land.properties.gis_area.toFixed(2)} ga`"
-                    return-object
-                    required
-                    :item-value="(plant) => plant.id"
-                    :rules="[rules.required]"
-          >
-          </v-select>
-        </div>
-        <div>
-          <v-btn
-              color="success"
-              :disabled="!(selected_land && plant_type && row_space)"
-              @click="$store.dispatch('get_tech_card', {selected_land, plant_type})"
-          >Тех. картани яратиш
-          </v-btn>
-        </div>
+<!--        <div>-->
+<!--          <v-select :items="plant_types"-->
+<!--                    label="Экин тури"-->
+<!--                    outlined-->
+<!--                    dense-->
+<!--                    v-model="plant_type"-->
+<!--                    :item-text="(plant) => plant.name_uz"-->
+<!--                    return-object-->
+<!--                    required-->
+<!--                    :item-value="(plant) => plant.id"-->
+<!--                    :rules="[rules.required]"-->
+<!--          >-->
+<!--          </v-select>-->
+<!--        </div>-->
+<!--        <div>-->
+<!--          <v-select :items="row_spaces"-->
+<!--                    label="Қатор оралиғи"-->
+<!--                    outlined-->
+<!--                    v-model="row_space"-->
+<!--                    return-object-->
+<!--                    dense-->
+<!--                    required-->
+<!--                    :rules="[rules.required]"-->
+<!--          >-->
+<!--          </v-select>-->
+<!--        </div>-->
+<!--        <div>-->
+<!--          <v-select :items="lands"-->
+<!--                    label="Далани танлаш"-->
+<!--                    outlined-->
+<!--                    dense-->
+<!--                    v-model="selected_land"-->
+<!--                    :item-text="(land) => `${land.properties.gis_area.toFixed(2)} ga`"-->
+<!--                    return-object-->
+<!--                    required-->
+<!--                    :item-value="(plant) => plant.id"-->
+<!--                    :rules="[rules.required]"-->
+<!--          >-->
+<!--          </v-select>-->
+<!--        </div>-->
+<!--        <div>-->
+<!--          <v-btn-->
+<!--              color="success"-->
+<!--              :disabled="!(selected_land && plant_type && row_space)"-->
+<!--              @click="$store.dispatch('get_tech_card', {selected_land, plant_type})"-->
+<!--          >Тех. картани яратиш-->
+<!--          </v-btn>-->
+<!--        </div>-->
         <template v-if="((selected_land && plant_type && row_space) && ( tech_card.phases.length > 0 && tech_card.phases[0].arrangements.length > 0))">
 
           <div>
             <v-btn
                 :disabled="( tech_card.phases && tech_card.phases.length > 0 && tech_card.phases[0].arrangements && tech_card.phases[0].arrangements.length > 0 && tech_card.phases[0].arrangements[0].copy) "
-                color="success" @click="$store.dispatch('save_tech_card', {selected_land, plant_type})">
+                color="success" @click="save()">
               Сақлаш
             </v-btn>
           </div>
@@ -107,6 +107,11 @@ export default {
   },
   mounted() {
     this.$store.dispatch('getAllPlantTypes')
+  },
+  methods: {
+    save(){
+      this.$store.dispatch('save_tech_card', {selected_land : this.selected_land, plant_type: this.plant_type})
+    }
   },
   computed: {
     selected_land: {

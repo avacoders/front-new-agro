@@ -7,6 +7,7 @@ import arrangements from "@/store/arrangements";
 import plant_types from "@/store/plant_types";
 import gis_bridge from "@/store/gis_bridge";
 import agronom from "@/store/agronom";
+import fields from "@/store/fields";
 
 Vue.use(Vuex)
 
@@ -19,7 +20,8 @@ const store = new Vuex.Store({
         arrangements,
         plant_types,
         gis_bridge,
-        agronom
+        agronom,
+        fields
     },
     state:{
         title: 'Regions',

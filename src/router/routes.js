@@ -19,7 +19,11 @@ const routes = [
         name: 'agronom.index',
         component: () => import('@/pages/agronom/AgronomIndex'),
     },
-
+    {
+        path: '/fields',
+        name: 'fields.index',
+        component: () => import('@/pages/fields/FieldIndex'),
+    },
     ...regions,
     ...districts,
     ...mfies,

@@ -87,9 +87,6 @@
 </template>
 
 <script>
-import $ from "jquery";
-
-window.$ = $
 import draggable from "vuedraggable";
 import InputByType from "@/pages/tech_cards/components/InputByType";
 
@@ -103,6 +100,7 @@ export default {
       editingItem: {},
       index: null,
       search: '',
+
       headers: [
         {
           text: '',

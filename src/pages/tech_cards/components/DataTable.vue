@@ -156,9 +156,7 @@
 </template>
 
 <script>
-import $ from "jquery";
 
-window.$ = $
 import DeleteArrangement from "./DeleteArrangement";
 import DeleteGroup from "./DeleteGroup";
 import CreateArrangement from "./CreateArrangement";

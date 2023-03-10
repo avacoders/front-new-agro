@@ -35,6 +35,11 @@ const navigators = [
         title: "Агроном картаси",
         icon: "mdi-tractor",
         route: "agronom.index"
+    },
+    {
+        title: "Далалар",
+        icon: "mdi-tractor",
+        route: "fields.index"
     }
 
 ];

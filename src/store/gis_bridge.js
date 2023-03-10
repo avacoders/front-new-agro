@@ -45,6 +45,7 @@ const getters = {
 
 const actions = {
     get_gis_bridge_lands({commit}, params) {
+        commit('gis_bridge_lands', [])
         commit('gis_bridge_lands_loading', true)
         axios.get(`https://api.agro.uz/gis_bridge/tech-map`, {
             headers: {
@@ -53,7 +54,33 @@ const actions = {
             params
         })
             .then(response => {
-                commit('gis_bridge_lands', response.data[0].features)
+                var lands = []
+                if(response.data.length)
+                for(var land of response.data[0].features)
+                {
+                    var item = land
+                    axios.get(`https://api.agro.uz/gis_bridge/get_contour`, {
+                        headers: {
+                            'Authorization': "Token 140d96f6c234d5ea7838aa43729b21fe97a6"
+                        },
+                        params: {cad: item.properties.cadastral_number}
+                    })
+                        .then(res => {
+                            item.properties.contour_number = res.data.features[0].properties.contour_number
+                            item.properties.massiv_name = res.data.features[0].properties.massiv_name
+                            commit('gis_bridge_lands_loading', false)
+                            axios.get('/geojson', {
+                                params: {contour_num: item.properties.contour_number}
+                            })
+                                .then(r => {
+                                    item.parts = r.data
+                                    commit('gis_bridge_lands_loading', false)
+                                })
+                        })
+
+                    lands.push(item)
+                }
+                commit('gis_bridge_lands', lands)
                 commit('gis_bridge_lands_loading', false)
                 commit('is_changed_map', true)
             })
@@ -62,21 +89,40 @@ const actions = {
                 console.log(error)
             })
     },
-    get_tech_card({commit}, {selected_land, plant_type}) {
+    getConturNumberByCadnumber({commit}, params){
+        axios.get(`https://api.agro.uz/gis_bridge/get_contour`, {
+            headers: {
+                'Authorization': "Token 140d96f6c234d5ea7838aa43729b21fe97a6"
+            },
+            params
+        })
+            .then(response => {
+                console.log(response.data);
+                commit('gis_bridge_lands_loading', false)
+            })
+            .catch(error => {
+                commit('gis_bridge_lands_loading', false)
+                console.log(error)
+            })
+    },
+    get_tech_card({commit, dispatch}, {selected_land, plant_type}) {
         commit('gis_bridge_lands_loading', true)
         commit('land', selected_land)
         commit('plant_type', plant_type)
         var params = {
             ekin_type_id: plant_type.id,
-            gis_area: selected_land.properties.gis_area,
-            cadastor: selected_land.properties.cadastral_number,
-            district_code: selected_land.properties.soato_code,
+            gis_area: selected_land.properties.crop_area,
+            cadastor: selected_land.properties.kontur_raqami + "/" + selected_land.properties.crop_name,
+            district_code: selected_land.properties.district,
         }
+
         axios.get(`/tech_card`, {params})
             .then(response => {
                 console.log(response.data);
                 commit('tech_card', response.data)
                 commit('gis_bridge_lands_loading', false)
+                if(response.data.phases.length && response.data.phases[0].arrangements.length && !response.data.phases[0].arrangements[0].copy)
+                    dispatch('save_tech_card', {selected_land, plant_type})
             }).catch(error => {
             console.log(error);
             commit('gis_bridge_lands_loading', false)
@@ -88,9 +134,9 @@ const actions = {
         commit('plant_type', plant_type)
         var data = new FormData()
         data.append('ekin_type_id', plant_type.id)
-        data.append('gis_area', selected_land.properties.gis_area)
-        data.append('cadastor', selected_land.properties.cadastral_number)
-        data.append('district_code', selected_land.properties.soato_code)
+        data.append('gis_area', selected_land.properties.crop_area)
+        data.append('cadastor', selected_land.properties.kontur_raqami + "/" + selected_land.properties.crop_name)
+        data.append('district_code', selected_land.properties.district)
         axios.post(`/save_tech_card`, data)
             .then(() => {
                 commit('gis_bridge_lands_loading', false)
