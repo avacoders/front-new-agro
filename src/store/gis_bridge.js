@@ -212,16 +212,12 @@ const actions = {
             commit('gis_bridge_lands_loading', false)
         })
     },
-    delete_tech_card({commit, dispatch}, {id}) {
-        commit('gis_bridge_lands_loading', true)
+    delete_tech_card({commit}, {id}) {
         var params = {
             id
         }
         axios.get(`/delete_arr_copy`, {params})
             .then(() => {
-                commit('gis_bridge_lands_loading', false)
-                commit('delete_tech_card_dialog', false)
-                dispatch('get_tech_card', {selected_land: state.land, plant_type: state.plant_type})
             }).catch(error => {
             console.log(error);
             commit('gis_bridge_lands_loading', false)

@@ -1,13 +1,13 @@
 <template>
   <v-card class="mapCorner">
-<!--    <v-card-text class="mt-3" :height="200">-->
-<!--      <h2>-->
-<!--        Кадастр рақами : <span  v-if="selected.feature && selected.feature.properties && selected.feature.properties.cadastral_number" class="ml-5">{{ selected.feature.properties.cadastral_number }}</span>-->
-<!--      </h2>-->
-<!--      <h2 >-->
-<!--        Ер майдони :  <span v-if="selected.feature && selected.feature.properties && selected.feature.properties.gis_area" class="ml-5">{{ selected.feature.properties.gis_area.toFixed(2) }} га</span>-->
-<!--      </h2>-->
-<!--    </v-card-text>-->
+    <!--    <v-card-text class="mt-3" :height="200">-->
+    <!--      <h2>-->
+    <!--        Кадастр рақами : <span  v-if="selected.feature && selected.feature.properties && selected.feature.properties.cadastral_number" class="ml-5">{{ selected.feature.properties.cadastral_number }}</span>-->
+    <!--      </h2>-->
+    <!--      <h2 >-->
+    <!--        Ер майдони :  <span v-if="selected.feature && selected.feature.properties && selected.feature.properties.gis_area" class="ml-5">{{ selected.feature.properties.gis_area.toFixed(2) }} га</span>-->
+    <!--      </h2>-->
+    <!--    </v-card-text>-->
 
     <v-card-text class="my-2">
       <v-container fluid style="padding: 0">
@@ -58,46 +58,49 @@
               <v-alert
                   dense
                   type="error"
-              >Ушбу майдонга технологик карта яратилмаган</v-alert>
-            <v-row>
-              <v-col cols="12">
-                <v-select :items="plant_types"
-                          label="Экин тури"
-                          outlined
-                          dense
-                          v-model="plant_type"
-                          :item-text="(plant) => plant.name_uz"
-                          return-object
-                          required
-                          hide-details
-                          :item-value="(plant) => plant.id"
-                          :rules="[rules.required]"
-                >
-                </v-select>
-              </v-col>
-              <v-col cols="12">
+              >Ушбу майдонга технологик карта яратилмаган
+              </v-alert>
+              <v-row>
+                <v-col cols="12">
+                  <v-select :items="plant_types"
+                            label="Экин тури"
+                            outlined
+                            dense
+                            v-model="plant_type"
+                            :item-text="(plant) => plant.name_uz"
+                            return-object
+                            required
+                            hide-details
+                            :item-value="(plant) => plant.id"
+                            :rules="[rules.required]"
+                  >
+                  </v-select>
+                </v-col>
+                <v-col cols="12">
 
-                <v-select :items="row_spaces"
-                          label="Қатор оралиғи"
-                          outlined
-                          hide-details
-                          v-model="row_space"
-                          return-object
-                          dense
-                          required
-                          :rules="[rules.required]"
-                >
-                </v-select>
-              </v-col>
-            </v-row>
+                  <v-select :items="row_spaces"
+                            label="Қатор оралиғи"
+                            outlined
+                            hide-details
+                            v-model="row_space"
+                            return-object
+                            dense
+                            required
+                            :rules="[rules.required]"
+                  >
+                  </v-select>
+                </v-col>
+              </v-row>
             </template>
             <template v-else>
               <v-alert
                   dense
                   type="success"
-              >Ушбу майдон учун технологик карта мавжуд</v-alert>
+              >Ушбу майдон учун технологик карта мавжуд
+              </v-alert>
               <template v-if="plant_type && plant_type.id">
-              <p><b>Технологик картадаги экин тури: </b>{{ plant_types.find((e)=> e.id  === plant_type.id).name_uz }}</p>
+                <p><b>Технологик картадаги экин тури: </b>{{ plant_types.find((e) => e.id === plant_type.id).name_uz }}
+                </p>
               </template>
               <p><b>Технологик картадаги қатор оралиғи: </b> {{ row_space }} га</p>
             </template>
@@ -115,20 +118,23 @@
             </v-btn>
             <template v-if="!tech_card_exists">
 
-            <v-btn
-                color="success"
-                text
-                @click="save"
-            >
-              Тех. картани яратиш
-            </v-btn>
+              <v-btn
+                  color="success"
+                  text
+                  @click="save"
+                  :disabled="plant_type === null || row_space === null || loading"
+                  :loading="loading"
+              >
+                Тех. картани яратиш
+              </v-btn>
             </template>
             <template v-else>
-
               <v-btn
                   color="primary"
                   text
                   @click="get"
+                  :disabled="loading"
+                  :loading="loading"
               >
                 Тех. картани кўриш
               </v-btn>
@@ -144,6 +150,7 @@
 import {LMap, LTileLayer, LControlLayers, LControlZoom} from 'vue2-leaflet';
 import L from 'leaflet';
 import $ from 'jquery'
+
 export default {
   name: "MapDialog",
 
@@ -174,6 +181,25 @@ export default {
       maxZoom: 20,
       markerLatLng: [41.66655, 66.3235],
       subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+      colors: [
+        '#ff0000',
+        '#00ff00',
+        '#0000ff',
+        '#ffff00',
+        '#00ffff',
+        '#ff00ff',
+        '#000000',
+        '#ffffff',
+        '#800000',
+        '#808000',
+        '#008000',
+        '#800080',
+        '#008080',
+        '#000080',
+        '#808080',
+        '#c0c0c0',
+      ],
+
       tileProviders: [
         {
           name: 'Satellite',
@@ -216,11 +242,11 @@ export default {
     },
   },
   methods: {
-    save(){
+    save() {
       this.$store.dispatch('save_tech_card', {selected_land: this.land, plant_type: this.plant_type})
       this.dialog = true
     },
-    get(){
+    get() {
       this.$store.dispatch('get_tech_card', {selected_land: this.land, plant_type: this.plant_type})
 
     },
@@ -229,7 +255,7 @@ export default {
       var map = this.$refs.map.mapObject
       map.eachLayer(function (layer) {
 
-        if(layer && typeof layer.setStyle == 'function') {
+        if (layer && typeof layer.setStyle == 'function') {
           layer.setStyle({
             fillColor: '#0088ff',
           })
@@ -247,38 +273,47 @@ export default {
         fillOpacity: 0.7,
       };
 
+      var i = 0
       for (var land in this.lands) {
-        if( this.lands[land].parts)
-        for(var part in  this.lands[land].parts) {
-          if(this.lands[land].parts[part]) {
-
-            var geoJSON = new L.geoJSON(this.lands[land].parts[part], {
-              maxZoom: 20,
-              tolerance: 3,
-              debug: 0,
-              style: geojsonStyle,
-              onEachFeature: function(feature, layer) {
-                layer.on('mouseover', function () {
-                  layer.setStyle({
-                    color: "white"
-                  })
-                });
+        if (this.lands[land].parts)
+          for (var part in this.lands[land].parts) {
+            if (this.lands[land].parts[part]) {
+              geojsonStyle.fillColor = This.colors[i]
+              var geoJSON = new L.geoJSON(this.lands[land].parts[part], {
+                maxZoom: 20,
+                tolerance: 3,
+                debug: 0,
+                style: geojsonStyle,
+                onEachFeature: function (feature, layer) {
+                  L.marker(layer.getBounds().getCenter(), {
+                    icon: L.divIcon({
+                      className: 'label',
+                      html: `<div style="transform: translateX(50%); color:white; font-size: 12px; position: absolute; right: 50%">${feature.properties.crop_name}</div>`,
+                      iconSize: [100, 40]
+                    })
+                  }).addTo(map);
+                  layer.on('mouseover', function () {
+                    layer.setStyle({
+                      color: "white",
+                    })
+                  });
                   layer.on('mouseout', function () {
                     layer.setStyle({
-                      color: "black"
+                      color: This.selected.feature == feature ? '#55ff00' : "black"
                     })
                   });
                   layer.on('click', function () {
                     This.clickToFeature(feature, layer)
                   });
-                // layer.myTag = "myGeoJSON"
-              }
+                  i++
+                  // layer.myTag = "myGeoJSON"
+                }
 
-            }).addTo(this.$refs.map.mapObject).bringToFront()
-            this.geoJSONs.push(geoJSON)
-            this.$refs.map.mapObject.fitBounds(geoJSON.getBounds(), {padding: [50, 50]})
+              }).addTo(this.$refs.map.mapObject).bringToFront()
+              this.geoJSONs.push(geoJSON)
+              this.$refs.map.mapObject.fitBounds(geoJSON.getBounds(), {padding: [50, 50]})
+            }
           }
-        }
       }
       this.is_changed_map = !this.is_changed_map
     },
@@ -288,18 +323,21 @@ export default {
       map.eachLayer(function (l) {
         if (typeof l.setStyle === 'function')
           l.setStyle({
-          fillColor: '#0088ff',
-        });
+            color: 'white',
+            weight: 1,
+          });
       });
       this.$store.commit('land', feature)
       if (this.selected.feature == feature) {
         layer.setStyle({
-          fillColor: '#0088ff',
+          color: 'white',
+          weight: 1,
         });
       } else {
         this.selected = {feature, layer};
         layer.setStyle({
-          fillColor: '#55ff00',
+          color: '#55ff00',
+          weight: 4,
         });
       }
     },
@@ -310,15 +348,23 @@ export default {
     this.$store.dispatch('getAllPlantTypes')
   },
   computed: {
+    loading: {
+      get() {
+        return this.$store.getters.gis_bridge_lands_loading
+      },
+      set(value) {
+        this.$store.commit('gis_bridge_lands_loading', value)
+      }
+    },
     dialog: {
-      get(){
+      get() {
         return this.$store.getters.land_dialog
       },
-      set(value){
+      set(value) {
         this.$store.commit('land_dialog', value)
       }
     },
-    plant_type:{
+    plant_type: {
       get() {
         return this.$store.getters.plant_type;
       },
@@ -337,7 +383,7 @@ export default {
         this.$store.commit('set_all_plant_types', value);
       }
     },
-    land(){
+    land() {
       return this.$store.getters.land
     },
     row_space: {
@@ -361,12 +407,15 @@ export default {
     lands() {
       this.draw()
     },
-    dialog(val){
-      if(val)
-        this.$store.dispatch('check_tech_card', {cad_number: this.land.properties.cadastral_number, contour_number: this.land.properties.kontur_raqami + "/" + this.land.id })
+    dialog(val) {
+      if (val)
+        this.$store.dispatch('check_tech_card', {
+          cad_number: this.land.properties.cadastral_number,
+          contour_number: this.land.properties.kontur_raqami + "/" + this.land.id
+        })
     },
     is_changed_map(val) {
-      if(val){
+      if (val) {
         this.draw()
       }
     }
@@ -382,7 +431,8 @@ export default {
 .vue2leaflet-map {
   height: 60vh;
 }
-.mapCorner{
+
+.mapCorner {
   border-radius: 12px;
 }
 
@@ -392,11 +442,13 @@ export default {
   opacity: 0;
   transition: all .3s ease-out;
 }
+
 .fade.show .modal-content {
   opacity: 1;
   transform: scale(1);
 }
-.leaflet-marker-icon{
+
+.leaflet-marker-icon {
   color: white;
   font-size: 16px;
 

@@ -6,7 +6,7 @@
       >
         <v-card>
           <v-card-title >
-            Siz rostan ham "{{ deletingItem.arrangements_name }}"ni o'chirmoqchimisiz?
+            Siz rostan ham "{{ deletingItem.name }}"ni o'chirmoqchimisiz?
           </v-card-title>
 
 
@@ -46,14 +46,37 @@ export default {
   },
   methods: {
     deleteItem() {
-      this.$store.dispatch('delete_tech_card', {id : this.deletingItem.id})
+      this.$store.dispatch('delete_tech_card', {id : this.deletingItem.id}).then(() => {
+        this.$store.commit('gis_bridge_lands_loading', true)
+        setTimeout(() => {
+          this.$store.dispatch('get_tech_card', {selected_land: this.land, plant_type: this.plant_type})
+          this.$swal({
+            title: 'O\'chirildi',
+            text: 'Muvaffaqiyatli o\'chirildi',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false
+          })
+          this.dialog = false
+        }, 11000)
+      })
     }
   },
 
   computed: {
+    land: {
+      get() {
+        return this.$store.getters.land;
+      },
+    },
+    plant_type: {
+      get() {
+        return this.$store.getters.plant_type
+      },
+    },
     loading: {
       get() {
-        return this.$store.getters.tech_card_loading
+        return this.$store.getters.gis_bridge_lands_loading
       }
     },
     dialog: {
