@@ -16,12 +16,11 @@
 <!--          Loading...-->
 <!--        </v-progress-circular>-->
 <!--      </v-overlay>-->
-      <template v-if="lands.length && tech_card.phases && !tech_card.phases.length">
         <map-dialog ref="mapView" :change="tab" :lands="lands" />
-      </template>
       <v-tabs
           v-model="tab"
           class="my-2"
+          ref="table"
       >
         <v-tab value="one">Контур Тех.картаси</v-tab>
         <v-tab value="two">Шаблон</v-tab>
@@ -32,53 +31,100 @@
             v-for="item in items"
             :key="item"
         >
-          <v-card>
-            <template v-if="lands.length && tech_card.phases && tech_card.phases.length">
-              <v-card class="mt-4">
-                <v-card-text>
-                  <v-row>
-                    <template  v-for="(item, i) in tables">
-                      <v-col v-bind:key="i">
-                        <v-simple-table>
-                          <tbody>
-                          <template v-for="(parameter, index) in item.params">
+          <template v-if="item == 'Контур Тех.картаси'">
+            <v-card>
+              <template v-if="lands.length && tech_card.phases && tech_card.phases.length">
+                <v-card class="mt-4">
+                  <v-card-text>
+                    <v-row>
+                      <template  v-for="(item, i) in tables">
+                        <v-col v-bind:key="i">
+                          <v-simple-table>
+                            <tbody>
+                            <template v-for="(parameter, index) in item.params">
+                              <tr v-bind:key="`${index}_param`">
+                                <td>{{ parameter.label }}</td>
+                                <td>{{ parameter.value  }}</td>
+                              </tr>
+                            </template>
+                            </tbody>
+                          </v-simple-table>
+                        </v-col>
+                      </template>
+                      <!--                    <template v-for="(parameterTable, i) in tech_card.parameters">-->
+                      <!--                      <v-col v-bind:key="i" v-if="Object.keys(params).includes(Object.keys(parameterTable)[0])">-->
+                      <!--                        {{ params[Object.keys(parameterTable)[0]] }}-->
+                      <!--                        <v-simple-table>-->
+                      <!--                          <tbody>-->
+                      <!--                          <template v-for="(parameter, index) in parameterTable[Object.keys(parameterTable)[0]]">-->
 
-                            <tr v-bind:key="`${index}_param`">
-                              <td>{{ parameter.label }}</td>
-                              <td>{{ parameter.value  }}</td>
-                            </tr>
-                          </template>
-                          </tbody>
-                        </v-simple-table>
-                      </v-col>
-                    </template>
-<!--                    <template v-for="(parameterTable, i) in tech_card.parameters">-->
-<!--                      <v-col v-bind:key="i" v-if="Object.keys(params).includes(Object.keys(parameterTable)[0])">-->
-<!--                        {{ params[Object.keys(parameterTable)[0]] }}-->
-<!--                        <v-simple-table>-->
-<!--                          <tbody>-->
-<!--                          <template v-for="(parameter, index) in parameterTable[Object.keys(parameterTable)[0]]">-->
+                      <!--                            <tr v-bind:key="`${index}_param_${Object.keys(parameterTable)[0]}`"-->
+                      <!--                                v-if="index != 'id'">-->
+                      <!--                              <td>{{ params[index] }}</td>-->
+                      <!--                              <td>{{ parameter  }}</td>-->
+                      <!--                            </tr>-->
+                      <!--                          </template>-->
+                      <!--                          </tbody>-->
+                      <!--                        </v-simple-table>-->
+                      <!--                      </v-col>-->
+                      <!--                    </template>-->
+                    </v-row>
+                  </v-card-text>
+                </v-card>
+                <v-card class="mt-4">
+                  <v-card-title>Жадвал</v-card-title>
+                  <data-table/>
+                </v-card>
+              </template>
+            </v-card>
+          </template>
+          <template v-if="item == 'Шаблон'">
+            <v-card>
+              <template v-if="lands.length && tech_card.phases && tech_card.phases.length">
+                <v-card class="mt-4">
+                  <v-card-text>
+                    <v-row>
+                      <template  v-for="(item, i) in tables">
+                        <v-col v-bind:key="i">
+                          <v-simple-table>
+                            <tbody>
+                            <template v-for="(parameter, index) in item.params">
+                              <tr v-bind:key="`${index}_param`">
+                                <td>{{ parameter.label }}</td>
+                                <td>{{ parameter.value  }}</td>
+                              </tr>
+                            </template>
+                            </tbody>
+                          </v-simple-table>
+                        </v-col>
+                      </template>
+                      <!--                    <template v-for="(parameterTable, i) in tech_card.parameters">-->
+                      <!--                      <v-col v-bind:key="i" v-if="Object.keys(params).includes(Object.keys(parameterTable)[0])">-->
+                      <!--                        {{ params[Object.keys(parameterTable)[0]] }}-->
+                      <!--                        <v-simple-table>-->
+                      <!--                          <tbody>-->
+                      <!--                          <template v-for="(parameter, index) in parameterTable[Object.keys(parameterTable)[0]]">-->
 
-<!--                            <tr v-bind:key="`${index}_param_${Object.keys(parameterTable)[0]}`"-->
-<!--                                v-if="index != 'id'">-->
-<!--                              <td>{{ params[index] }}</td>-->
-<!--                              <td>{{ parameter  }}</td>-->
-<!--                            </tr>-->
-<!--                          </template>-->
-<!--                          </tbody>-->
-<!--                        </v-simple-table>-->
-<!--                      </v-col>-->
-<!--                    </template>-->
-                  </v-row>
-                </v-card-text>
-              </v-card>
-              <v-card class="mt-4">
-
-                <v-card-title>Жадвал</v-card-title>
-                <data-table/>
-              </v-card>
-            </template>
-          </v-card>
+                      <!--                            <tr v-bind:key="`${index}_param_${Object.keys(parameterTable)[0]}`"-->
+                      <!--                                v-if="index != 'id'">-->
+                      <!--                              <td>{{ params[index] }}</td>-->
+                      <!--                              <td>{{ parameter  }}</td>-->
+                      <!--                            </tr>-->
+                      <!--                          </template>-->
+                      <!--                          </tbody>-->
+                      <!--                        </v-simple-table>-->
+                      <!--                      </v-col>-->
+                      <!--                    </template>-->
+                    </v-row>
+                  </v-card-text>
+                </v-card>
+                <v-card class="mt-4">
+                  <v-card-title>Жадвал</v-card-title>
+                  <data-table-shablon/>
+                </v-card>
+              </template>
+            </v-card>
+          </template>
         </v-tab-item>
       </v-tabs-items>
     </v-card>
@@ -88,6 +134,7 @@
 <script>
 import SearchTechCard from "@/pages/tech_cards/components/SearchTechCard";
 import DataTable from "@/pages/tech_cards/components/DataTable";
+import DataTableShablon from "@/pages/tech_cards/components/DataTableShablon";
 import MapDialog from "@/pages/tech_cards/components/MapDialog";
 
 export default {
@@ -96,11 +143,13 @@ export default {
     MapDialog,
     SearchTechCard,
     DataTable,
+    DataTableShablon
   },
   data() {
     return {
       tab: null,
-      items: ["Жадвал", "Харита"],
+      items: ["Контур Тех.картаси", "Шаблон"],
+
       tables: [{
         name: "Тузатиш (дала паспорти бўйича) коэффициенти",
         params: [
@@ -187,6 +236,8 @@ export default {
       return this.$store.getters.tech_card
     },
   },
+  watch:{
+  }
 }
 </script>
 

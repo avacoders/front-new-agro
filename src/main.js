@@ -7,7 +7,7 @@ Vue.config.productionTip = false
 import axios from 'axios'
 window.axios = axios
  window.axios.defaults.baseURL = "http://92.63.206.12:5200"
-//window.axios.defaults.baseURL = "http://192.168.44.16:5001"
+// window.axios.defaults.baseURL = "http://192.168.44.16:5001"
 window.axios.defaults.headers.post['mimeType'] = 'multipart/form-data';
 window.axios.defaults.headers.post['processData'] = false;
 window.axios.defaults.headers.post['contentType'] = false;

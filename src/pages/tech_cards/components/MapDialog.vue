@@ -1,15 +1,15 @@
 <template>
   <v-card class="mapCorner">
-    <v-card-text class="mt-3" :height="200">
-      <h2>
-        Кадастр рақами : <span  v-if="selected.feature && selected.feature.properties && selected.feature.properties.cadastral_number" class="ml-5">{{ selected.feature.properties.cadastral_number }}</span>
-      </h2>
-      <h2 >
-        Ер майдони :  <span v-if="selected.feature && selected.feature.properties && selected.feature.properties.gis_area" class="ml-5">{{ selected.feature.properties.gis_area.toFixed(2) }} га</span>
-      </h2>
-    </v-card-text>
+<!--    <v-card-text class="mt-3" :height="200">-->
+<!--      <h2>-->
+<!--        Кадастр рақами : <span  v-if="selected.feature && selected.feature.properties && selected.feature.properties.cadastral_number" class="ml-5">{{ selected.feature.properties.cadastral_number }}</span>-->
+<!--      </h2>-->
+<!--      <h2 >-->
+<!--        Ер майдони :  <span v-if="selected.feature && selected.feature.properties && selected.feature.properties.gis_area" class="ml-5">{{ selected.feature.properties.gis_area.toFixed(2) }} га</span>-->
+<!--      </h2>-->
+<!--    </v-card-text>-->
 
-    <v-card-text>
+    <v-card-text class="my-2">
       <v-container fluid style="padding: 0">
 
         <l-map
@@ -19,6 +19,7 @@
             :center="center"
             style="z-index: 1"
             v-bind:style="{cursor: 'pointer'}"
+            height="60vh"
             class="mapCorner">
           <l-control-layers position="topright"></l-control-layers>
 
@@ -50,9 +51,14 @@
           </v-card-title>
           <v-card-text class="py-3" v-if="land && land.properties">
             <p><b>Контур рақами: </b>{{ land.properties.kontur_raqami }}</p>
-            <p><b>Экин тури: </b>{{ ekin_names['e' + land.properties.crop_name] }}</p>
+            <p><b>Экин тури: </b>{{ land.properties.crop_name }}</p>
             <p><b>Экин майдони: </b> {{ land.properties.crop_area.toFixed(2) }} га</p>
+            <template v-if="!tech_card_exists">
 
+              <v-alert
+                  dense
+                  type="error"
+              >Ушбу майдонга технологик карта яратилмаган</v-alert>
             <v-row>
               <v-col cols="12">
                 <v-select :items="plant_types"
@@ -84,26 +90,49 @@
                 </v-select>
               </v-col>
             </v-row>
+            </template>
+            <template v-else>
+              <v-alert
+                  dense
+                  type="success"
+              >Ушбу майдон учун технологик карта мавжуд</v-alert>
+              <template v-if="plant_type && plant_type.id">
+              <p><b>Технологик картадаги экин тури: </b>{{ plant_types.find((e)=> e.id  === plant_type.id).name_uz }}</p>
+              </template>
+              <p><b>Технологик картадаги қатор оралиғи: </b> {{ row_space }} га</p>
+            </template>
           </v-card-text>
 
           <v-divider></v-divider>
-
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn
-                color="primary"
+                color="secondary"
                 text
                 @click="dialog = false"
             >
               Ëпиш
             </v-btn>
+            <template v-if="!tech_card_exists">
+
             <v-btn
-                color="primary"
+                color="success"
                 text
                 @click="save"
             >
               Тех. картани яратиш
             </v-btn>
+            </template>
+            <template v-else>
+
+              <v-btn
+                  color="primary"
+                  text
+                  @click="get"
+              >
+                Тех. картани кўриш
+              </v-btn>
+            </template>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -129,29 +158,10 @@ export default {
       row_spaces: [
         45, 60, 90
       ],
-      plant_type: null,
-      ekin_names: {
-        e104070000: "Карам",
-        e104040000: "Пиёз",
-        e104050000: "Саримсоқпиёз",
-        e104060000: "Порей пиёзи",
-        e104090000: "Кўкатлар",
-        e104100000: "Редиска",
-        e104110000: "Қалампир",
-        e107010000: "Картошка",
-        e109000000: "Мевали дарахтлар",
-        e102000000: "Буғдой",
-        e101010000: "Ғўза",
-        e108000000: "Ozuqa ekin",
-        e190000000: "Boshqa ekinlar",
-        e105000000: "Полиз",
-        e108040000: "Макка",
-      },
       rules: {
         required: value => !!value || "Required.",
         max: v => v.length <= 255 || "Max 20 characters",
       },
-      dialog: false,
       options: {
         zoomControl: false,
       },
@@ -192,9 +202,11 @@ export default {
               'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
           maxZoom: 20,
           subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+
         },
       ],
       geoJSONs: [],
+
     };
   },
   props: {
@@ -205,19 +217,27 @@ export default {
   },
   methods: {
     save(){
-      this.$store.dispatch('get_tech_card', {selected_land: this.land, plant_type: this.plant_type})
+      this.$store.dispatch('save_tech_card', {selected_land: this.land, plant_type: this.plant_type})
       this.dialog = true
+    },
+    get(){
+      this.$store.dispatch('get_tech_card', {selected_land: this.land, plant_type: this.plant_type})
+
     },
     draw() {
       var This = this
       var map = this.$refs.map.mapObject
       map.eachLayer(function (layer) {
-        if (layer.myTag && layer.myTag === "myGeoJSON") {
-          map.removeLayer(layer)
+
+        if(layer && typeof layer.setStyle == 'function') {
+          layer.setStyle({
+            fillColor: '#0088ff',
+          })
+          if (layer.myTag && layer.myTag === "myGeoJSON") {
+            map.removeLayer(layer)
+          }
+
         }
-        layer.setStyle({
-          fillColor: '#0088ff',
-        });
       });
       var geojsonStyle = {
         fillColor: "#0088ff",
@@ -227,47 +247,40 @@ export default {
         fillOpacity: 0.7,
       };
 
-      var options =
-          {
-            maxZoom: 20,
-            tolerance: 3,
-            debug: 0,
-            style: geojsonStyle,
-            onEachFeature(feature, layer) {
+      for (var land in this.lands) {
+        if( this.lands[land].parts)
+        for(var part in  this.lands[land].parts) {
+          if(this.lands[land].parts[part]) {
 
-              L.marker(layer.getBounds().getCenter(), {
-                icon: L.divIcon({
-                  className: 'label',
-                  html: `<div style="transform: translateX(50%); color:white; font-size: 12px; position: absolute; right: 50%">${This.ekin_names['e' + feature.properties.crop_name]}</div>`,
-                  iconSize: [100, 40]
-                })
-              }).addTo(map);
-              layer.on('mouseover', function () {
-                layer.setStyle({
-                  color: "white"
-                })
-              });
-              layer.on('mouseout', function () {
-                layer.setStyle({
-                  color: "black"
-                })
-              });
-              layer.on('click', function () {
+            var geoJSON = new L.geoJSON(this.lands[land].parts[part], {
+              maxZoom: 20,
+              tolerance: 3,
+              debug: 0,
+              style: geojsonStyle,
+              onEachFeature: function(feature, layer) {
+                layer.on('mouseover', function () {
+                  layer.setStyle({
+                    color: "white"
+                  })
+                });
+                  layer.on('mouseout', function () {
+                    layer.setStyle({
+                      color: "black"
+                    })
+                  });
+                  layer.on('click', function () {
+                    This.clickToFeature(feature, layer)
+                  });
+                // layer.myTag = "myGeoJSON"
+              }
 
-                This.clickToFeature(feature, layer)
-              });
-              layer.myTag = "myGeoJSON"
-            },
-          };
-      for (var land of this.lands) {
-        if(land.parts)
-        for(var part of land.parts) {
-          var geoJSON = L.geoJSON(part, options).addTo(this.$refs.map.mapObject).bringToFront()
-          this.geoJSONs.push(geoJSON)
-          this.$refs.map.mapObject.fitBounds(geoJSON.getBounds(), {padding: [50, 50]})
+            }).addTo(this.$refs.map.mapObject).bringToFront()
+            this.geoJSONs.push(geoJSON)
+            this.$refs.map.mapObject.fitBounds(geoJSON.getBounds(), {padding: [50, 50]})
+          }
         }
       }
-      this.is_changed_map = false
+      this.is_changed_map = !this.is_changed_map
     },
     clickToFeature(feature, layer) {
       this.dialog = true
@@ -289,14 +302,33 @@ export default {
           fillColor: '#55ff00',
         });
       }
-
     },
   },
   mounted() {
     $('.leaflet-control-attribution').hide()
     this.draw()
+    this.$store.dispatch('getAllPlantTypes')
   },
   computed: {
+    dialog: {
+      get(){
+        return this.$store.getters.land_dialog
+      },
+      set(value){
+        this.$store.commit('land_dialog', value)
+      }
+    },
+    plant_type:{
+      get() {
+        return this.$store.getters.plant_type;
+      },
+      set(value) {
+        this.$store.commit('plant_type', value);
+      }
+    },
+    tech_card_exists() {
+      return this.$store.getters.tech_card_exists
+    },
     plant_types: {
       get() {
         return this.$store.getters.all_plant_types;
@@ -328,6 +360,10 @@ export default {
   watch: {
     lands() {
       this.draw()
+    },
+    dialog(val){
+      if(val)
+        this.$store.dispatch('check_tech_card', {cad_number: this.land.properties.cadastral_number, contour_number: this.land.properties.kontur_raqami + "/" + this.land.id })
     },
     is_changed_map(val) {
       if(val){
