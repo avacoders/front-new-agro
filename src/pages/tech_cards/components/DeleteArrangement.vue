@@ -58,7 +58,7 @@ export default {
             showConfirmButton: false
           })
           this.dialog = false
-        }, 11000)
+        }, 1)
       })
     }
   },
